@@ -40,7 +40,7 @@ AC_ARG_WITH([cpp],
 	CPP_PATH=$withval
 	AC_MSG_RESULT($CPP_PATH)], 
 	[AC_PATH_PROG([CPP_PATH],[cpp], [cpp], 
-  [$PATH:/bin:/usr/bin:/usr/lib:/usr/libexec:/usr/ccs/lib:/usr/ccs/lib:/lib])])
+ [$PATH:/bin:/usr/bin:/usr/lib:/usr/libexec:/usr/ccs/lib:/usr/ccs/lbin:/lib])])
 AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 
 # Checks for pkg-config packages
