@@ -31,6 +31,18 @@ AM_CONFIG_HEADER(config.h)
 AC_PROG_CC
 AC_PROG_INSTALL
 
+# xrdb needs to know where to find cpp at runtime - previously set as CppCmd
+# in Imake config files for each OS
+AC_ARG_WITH([cpp], 
+	AC_HELP_STRING([--with-cpp=path],
+		       [path to cpp command for xrdb to use at runtime]), 
+	[AC_MSG_CHECKING(for cpp)
+	CPP_PATH=$withval
+	AC_MSG_RESULT($CPP_PATH)], 
+	[AC_PATH_PROG([CPP_PATH],[cpp], [cpp], 
+  [$PATH:/bin:/usr/bin:/usr/lib:/usr/libexec:/usr/ccs/lib:/usr/ccs/lib:/lib])])
+AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
+
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(DEP, xmu x11)
 AC_SUBST(DEP_CFLAGS)
