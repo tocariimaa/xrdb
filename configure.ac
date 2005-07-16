@@ -31,6 +31,9 @@ AM_CONFIG_HEADER(config.h)
 AC_PROG_CC
 AC_PROG_INSTALL
 
+AC_CHECK_FUNC([mkstemp], 
+   AC_DEFINE(HAS_MKSTEMP,1,[Define to 1 if you have the `mkstemp' function.]))
+
 # xrdb needs to know where to find cpp at runtime - previously set as CppCmd
 # in Imake config files for each OS
 AC_ARG_WITH([cpp], 
