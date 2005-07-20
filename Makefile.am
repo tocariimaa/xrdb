@@ -21,8 +21,8 @@
 
 bin_PROGRAMS = xrdb
 
-xrdb_CFLAGS = $(DEP_CFLAGS)
-xrdb_LDADD = $(DEP_LIBS)
+xrdb_CFLAGS = $(XRDB_CFLAGS)
+xrdb_LDADD = $(XRDB_LIBS)
 
 xrdb_SOURCES =	\
         xrdb.c
