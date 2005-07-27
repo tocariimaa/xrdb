@@ -27,6 +27,5 @@ xrdb_LDADD = $(XRDB_LIBS)
 xrdb_SOURCES =	\
         xrdb.c
 
-dist_man_MANS = \
+dist_man1_MANS = \
         xrdb.man
-
