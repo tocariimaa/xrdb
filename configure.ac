@@ -22,7 +22,7 @@ dnl
 dnl Process this file with autoconf to create configure.
 
 AC_PREREQ([2.57])
-AC_INIT(xrdb,[7.0], [xorg@freedesktop.org],xrdb)
+AC_INIT(xrdb,[0.99.0], [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],xrdb)
 AM_INIT_AUTOMAKE([dist-bzip2])
 AM_MAINTAINER_MODE
 
@@ -50,5 +50,7 @@ AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 PKG_CHECK_MODULES(XRDB, xmu x11)
 AC_SUBST(XRDB_CFLAGS)
 AC_SUBST(XRDB_LIBS)
+
+XORG_RELEASE_VERSION
 
 AC_OUTPUT([Makefile])
