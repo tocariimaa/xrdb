@@ -47,7 +47,7 @@ AC_ARG_WITH([cpp],
 AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 
 # Checks for pkg-config packages
-PKG_CHECK_MODULES(XRDB, xmu x11)
+PKG_CHECK_MODULES(XRDB, xmuu x11)
 AC_SUBST(XRDB_CFLAGS)
 AC_SUBST(XRDB_LIBS)
 
