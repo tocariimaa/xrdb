@@ -1,3 +1,9 @@
+2006-03-28  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* xrdb.man: 
+	Bug #6386 <https://bugs.freedesktop.org/show_bug.cgi?id=6386>
+	Add appres & listres man pages to SEE ALSO list (Paul Vojta)
+
 2005-12-20  Kevin E. Martin  <kem-at-freedesktop-dot-org>
 
 	* configure.ac:
