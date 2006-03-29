@@ -2,6 +2,7 @@
  * xrdb - X resource manager database utility
  *
  * $Xorg: xrdb.c,v 1.6 2000/08/17 19:54:56 cpqbld Exp $
+ * $XdotOrg: $
  */
 
 /*
@@ -56,8 +57,12 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#if defined(sun) && defined(SVR4)
-#include <netdb.h> /* MAXHOSTNAMELEN */
+#ifdef NEED_SYS_PARAM_H
+# include <sys/param.h>		/* defines MAXHOSTNAMELEN on BSD & Linux */
+#endif
+
+#ifdef NEED_NETDB_H
+# include <netdb.h>		/* defines MAXHOSTNAMELEN on Solaris */
 #endif
 
 #define SCREEN_RESOURCES "SCREEN_RESOURCES"
@@ -144,20 +149,6 @@ static void StoreProperty ( Display *dpy, Window root, Atom res_prop );
 static void Process ( int scrno, Bool doScreen, Bool execute );
 static void ShuffleEntries ( Entries *db, Entries *dbs, int num );
 static void ReProcess ( int scrno, Bool doScreen );
-
-#if defined(USG) && !defined(CRAY) && !defined(MOTOROLA)
-static int 
-rename(char *from, char *to)
-{
-    (void) unlink (to);
-    if (link (from, to) == 0) {
-        unlink (from);
-        return 0;
-    } else {
-        return -1;
-    }
-}
-#endif
 
 static void 
 InitBuffer(Buffer *b)

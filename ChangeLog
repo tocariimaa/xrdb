@@ -1,5 +1,14 @@
 2006-03-28  Alan Coopersmith  <alan.coopersmith@sun.com>
 
+	* configure.ac:
+	* xrdb.c: 
+	Get rid of OS-checking #ifdefs by adding configure checks to find
+	the right header for MAXHOSTNAMELEN (<sys/param.h> for BSD/Linux,
+	<netdb.h> for Solaris) and deleting ancient rename() function for
+	pre-POSIX.1-1990 SysV systems.
+	
+2006-03-28  Alan Coopersmith  <alan.coopersmith@sun.com>
+	
 	* xrdb.man: 
 	Bug #6386 <https://bugs.freedesktop.org/show_bug.cgi?id=6386>
 	Add appres & listres man pages to SEE ALSO list (Paul Vojta)
