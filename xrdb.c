@@ -2,7 +2,7 @@
  * xrdb - X resource manager database utility
  *
  * $Xorg: xrdb.c,v 1.6 2000/08/17 19:54:56 cpqbld Exp $
- * $XdotOrg: $
+ * $XdotOrg: app/xrdb/xrdb.c,v 1.4 2006/03/29 03:27:37 alanc Exp $
  */
 
 /*
@@ -538,6 +538,7 @@ DoDisplayDefines(Display *display, String *defs, char *host)
     extnames = XListExtensions(display, &n);
     while (--n >= 0)
 	AddDefTok(defs, "EXT_", extnames[n]);
+    XFreeExtensionList(extnames);
 }
 
 char *ClassNames[] = {
