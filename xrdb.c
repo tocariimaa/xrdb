@@ -2,7 +2,7 @@
  * xrdb - X resource manager database utility
  *
  * $Xorg: xrdb.c,v 1.6 2000/08/17 19:54:56 cpqbld Exp $
- * $XdotOrg: app/xrdb/xrdb.c,v 1.4 2006/03/29 03:27:37 alanc Exp $
+ * $XdotOrg: app/xrdb/xrdb.c,v 1.5 2006/04/03 18:23:14 alanc Exp $
  */
 
 /*
@@ -420,7 +420,7 @@ static void
 AddNum(String *buff, char *title, int value)
 {
     char num[20];
-    sprintf(num, "%d", value);
+    snprintf(num, sizeof(num), "%d", value);
     AddDef(buff, title, num);
 }
 
@@ -437,8 +437,7 @@ AddDefTok(String *buff, char *prefix, char *title)
     char name[512];
     char c;
 
-    strcpy(name, prefix);
-    strcat(name, title);
+    snprintf(name, sizeof(name), "%s%s", prefix, title);
     for (s = name; (c = *s); s++) {
 	if (!isalpha(c) && !isdigit(c) && c != '_')
 	    *s = '_';
@@ -571,7 +570,7 @@ DoScreenDefines(Display *display, int scrno, String *defs)
     AddNum(defs, "PLANES", DisplayPlanes(display, scrno));
     AddNum(defs, "BITS_PER_RGB", visual->bits_per_rgb);
     AddDef(defs, "CLASS", ClassNames[visual->class]);
-    sprintf(name, "CLASS_%s", ClassNames[visual->class]);
+    snprintf(name, sizeof(name), "CLASS_%s", ClassNames[visual->class]);
     AddNum(defs, name, (int)visual->visualid);
     switch(visual->class) {
 	case StaticColor:
@@ -588,7 +587,7 @@ DoScreenDefines(Display *display, int scrno, String *defs)
 		break;
 	}
 	if (j < 0) {
-	    sprintf(name, "CLASS_%s_%d",
+	    snprintf(name, sizeof(name), "CLASS_%s_%d",
 		    ClassNames[vinfos[i].class], vinfos[i].depth);
 	    AddNum(defs, name, (int)vinfos[i].visualid);
 	}
@@ -1101,8 +1100,7 @@ Process(int scrno, Bool doScreen, Bool execute)
 	char template[100], old[100];
 
 	input = fopen(editFile, "r");
-	strcpy(template, editFile);
-	strcat(template, "XXXXXX");
+	snprintf(template, sizeof(template), "%sXXXXXX", editFile);
 #ifndef HAS_MKSTEMP
 	(void) mktemp(template);
 	output = fopen(template, "w");
@@ -1119,8 +1117,7 @@ Process(int scrno, Bool doScreen, Bool execute)
 	if (input)
 	    fclose(input);
 	fclose(output);
-	strcpy(old, editFile);
-	strcat(old, backup_suffix);
+	snprintf(old, sizeof(old), "%s%s", editFile, backup_suffix);
 	if (dont_execute) {		/* then write to standard out */
 	    char buf[BUFSIZ];
 	    int n;

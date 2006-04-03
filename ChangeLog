@@ -1,6 +1,12 @@
 2006-04-03  Alan Coopersmith  <alan.coopersmith@sun.com>
 
 	* xrdb.c: 
+	Convert sprintf/strcpy/strcat calls to snprintf to enforce bounds
+	checking.
+	
+2006-04-03  Alan Coopersmith  <alan.coopersmith@sun.com>
+
+	* xrdb.c: 
 	Plug memory leak of extension names list.  (Coverity id #612)
 
 2006-03-28  Alan Coopersmith  <alan.coopersmith@sun.com>
