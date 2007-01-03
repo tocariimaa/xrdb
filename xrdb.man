@@ -279,7 +279,7 @@ to generate a backup file.
 .B \-D\fIname[=value]\fP
 This option is passed through to the preprocessor and is used to define 
 symbols for use with conditionals such as
-.I# ifdef.
+.I #ifdef.
 .TP 8
 .B \-U\fIname\fP
 This option is passed through to the preprocessor and is used to remove
