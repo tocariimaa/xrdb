@@ -489,7 +489,10 @@ DoCmdDefines(String *buff)
 static int 
 Resolution(int pixels, int mm)
 {
-    return ((pixels * 100000 / mm) + 50) / 100;
+    if (mm == 0)
+	return 0;
+    else
+	return ((pixels * 100000 / mm) + 50) / 100;
 }
 
 
