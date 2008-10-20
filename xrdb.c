@@ -129,7 +129,8 @@ char tmpname3[32];
 #endif
 int oper = OPLOAD;
 char *editFile = NULL;
-char *cpp_program = CPP;
+const char *cpp_program = NULL;
+static const char* const cpp_locations[] = { CPP };
 char *backup_suffix = BACKUP_SUFFIX;
 Bool dont_execute = False;
 String defines;
@@ -877,6 +878,19 @@ main(int argc, char *argv[])
 	    filename = arg;
     }							/* end for */
 
+    /* If cpp to use was not specified, check for ones in default locations */
+    if (cpp_program == NULL) {
+	int number_of_elements
+	    = (sizeof cpp_locations) / (sizeof cpp_locations[0]);
+	int j;
+
+	for (j = 0; j < number_of_elements; j++) {
+	    if (access(cpp_locations[j], X_OK) == 0) {
+		cpp_program = cpp_locations[j];
+		break;
+	    }
+	} 
+    }
 #ifndef WIN32
     while ((i = open("/dev/null", O_RDONLY)) < 3)
 	; /* make sure later freopen won't clobber things */

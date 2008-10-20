@@ -66,12 +66,13 @@ fi
 # in Imake config files for each OS
 AC_ARG_WITH([cpp], 
 	AC_HELP_STRING([--with-cpp=path],
-		       [path to cpp command for xrdb to use at runtime]), 
+		       [comma-separated list of paths to cpp command for xrdb to use at runtime]), 
 	[AC_MSG_CHECKING(for cpp)
 	CPP_PATH=$withval
-	AC_MSG_RESULT($CPP_PATH)], 
+	AC_MSG_RESULT(--with-cpp specified $CPP_PATH)], 
 	[AC_PATH_PROG([CPP_PATH],[cpp], [cpp], 
  [$PATH:/bin:/usr/bin:/usr/lib:/usr/libexec:/usr/ccs/lib:/usr/ccs/lbin:/lib])])
+CPP_PATH=`echo ${CPP_PATH} | sed 's/,/\\",\\"/g'`
 AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 
 # Checks for pkg-config packages
