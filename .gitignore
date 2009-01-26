@@ -18,3 +18,7 @@ stamp-h1
 xrdb
 xrdb.1
 *~
+*.o
+xrdb-*.tar.*
+ChangeLog
+tags
