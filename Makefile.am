@@ -21,7 +21,7 @@
 
 bin_PROGRAMS = xrdb
 
-AM_CFLAGS = $(XRDB_CFLAGS)
+AM_CFLAGS = $(CWARNFLAGS) $(XRDB_CFLAGS)
 xrdb_LDADD = $(XRDB_LIBS)
 
 xrdb_SOURCES =	\
@@ -67,4 +67,4 @@ MAN_SUBSTS = \
 SUFFIXES = .$(APP_MAN_SUFFIX) .man
 
 .man.$(APP_MAN_SUFFIX):
-	sed $(MAN_SUBSTS) < $< > $@
+	$(AM_V_GEN)$(SED) $(MAN_SUBSTS) < $< > $@

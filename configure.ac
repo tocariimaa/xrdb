@@ -24,16 +24,17 @@ AC_PREREQ([2.57])
 AC_INIT(xrdb,[1.0.5], [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],xrdb)
 AM_INIT_AUTOMAKE([dist-bzip2])
 AM_MAINTAINER_MODE
-
-# Require xorg-macros: XORG_CWARNFLAGS, XORG_CHANGELOG
-m4_ifndef([XORG_MACROS_VERSION], [AC_FATAL([must install xorg-macros 1.2 or later before running autoconf/autogen])])
-XORG_MACROS_VERSION(1.2)
-
 AM_CONFIG_HEADER(config.h)
+
+# Require xorg-macros 1.3 or later: XORG_DEFAULT_OPTIONS
+m4_ifndef([XORG_MACROS_VERSION],
+	  [m4_fatal([must install xorg-macros 1.3 or later before running autoconf/autogen])])
+XORG_MACROS_VERSION(1.3)
 
 AC_PROG_CC
 AC_PROG_INSTALL
-XORG_CWARNFLAGS
+
+XORG_DEFAULT_OPTIONS
 
 AC_CHECK_FUNC([mkstemp], 
    AC_DEFINE(HAS_MKSTEMP,1,[Define to 1 if you have the 'mkstemp' function.]))
@@ -82,12 +83,7 @@ AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XRDB, xmuu x11)
-XRDB_CFLAGS="$CWARNFLAGS $XRDB_CFLAGS"
 AC_SUBST(XRDB_CFLAGS)
 AC_SUBST(XRDB_LIBS)
-
-XORG_MANPAGE_SECTIONS
-XORG_RELEASE_VERSION
-XORG_CHANGELOG
 
 AC_OUTPUT([Makefile])
