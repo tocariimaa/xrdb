@@ -30,10 +30,6 @@ AM_CONFIG_HEADER(config.h)
 m4_ifndef([XORG_MACROS_VERSION],
 	  [m4_fatal([must install xorg-macros 1.8 or later before running autoconf/autogen])])
 XORG_MACROS_VERSION(1.8)
-
-AC_PROG_CC
-AC_PROG_INSTALL
-
 XORG_DEFAULT_OPTIONS
 
 AC_CHECK_FUNC([mkstemp], 
@@ -83,7 +79,5 @@ AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XRDB, xmuu x11)
-AC_SUBST(XRDB_CFLAGS)
-AC_SUBST(XRDB_LIBS)
 
 AC_OUTPUT([Makefile])
