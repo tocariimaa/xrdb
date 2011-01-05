@@ -943,7 +943,7 @@ main(int argc, char *argv[])
 	strcpy(tmpname, "/tmp/xrdb_XXXXXX");
 #endif
 #endif
-#ifndef HAS_MKSTEMP
+#ifndef HAVE_MKSTEMP
 	(void) mktemp(tmpname);
 	filename = tmpname;
 	fp = fopen(filename, "w");
@@ -1115,7 +1115,7 @@ Process(int scrno, Bool doScreen, Bool execute)
 
 	input = fopen(editFile, "r");
 	snprintf(template, sizeof(template), "%sXXXXXX", editFile);
-#ifndef HAS_MKSTEMP
+#ifndef HAVE_MKSTEMP
 	(void) mktemp(template);
 	output = fopen(template, "w");
 #else

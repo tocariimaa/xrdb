@@ -37,8 +37,7 @@ m4_ifndef([XORG_MACROS_VERSION],
 XORG_MACROS_VERSION(1.8)
 XORG_DEFAULT_OPTIONS
 
-AC_CHECK_FUNC([mkstemp], 
-   AC_DEFINE(HAS_MKSTEMP,1,[Define to 1 if you have the 'mkstemp' function.]))
+AC_CHECK_FUNCS([mkstemp])
 
 # Find MAXHOSTNAMELEN definition
 # Common hidey holes:
