@@ -707,55 +707,30 @@ static void
 Syntax (void)
 {
     fprintf (stderr, 
-	     "usage:  %s [-options ...] [filename]\n\n",
-	     ProgramName);
-    fprintf (stderr, 
-	     "where options include:\n");
-    fprintf (stderr, 
-	     " -display host:dpy   display to use\n");
-    fprintf (stderr, 
-	     " -all                do all resources [default]\n");
-    fprintf (stderr, 
-	     " -global             do screen-independent resources\n");
-    fprintf (stderr, 
-	     " -screen             do screen-specific resources for one screen\n");
-    fprintf (stderr, 
-	     " -screens            do screen-specific resources for all screens\n");
-    fprintf (stderr,
-	     " -n                  show but don't do changes\n");
-    fprintf (stderr, 
-	     " -cpp filename       preprocessor to use [%s]\n",
-	     CPP);
-    fprintf (stderr, 
-	     " -nocpp              do not use a preprocessor\n");
-    fprintf (stderr, 
-	     " -query              query resources\n");
-    fprintf (stderr,
-	     " -load               load resources from file [default]\n");
-    fprintf (stderr,
-	     " -override           add in resources from file\n");
-    fprintf (stderr, 
-	     " -merge              merge resources from file & sort\n");
-    fprintf (stderr, 
-	     " -edit filename      edit resources into file\n");
-    fprintf (stderr, 
-	     " -backup string      backup suffix for -edit [%s]\n",
-	     BACKUP_SUFFIX);
-    fprintf (stderr, 
-	     " -symbols            show preprocessor symbols\n");
-    fprintf (stderr, 
-	     " -remove             remove resources\n");
-    fprintf (stderr, 
-	     " -retain             avoid server reset (avoid using this)\n");
-    fprintf (stderr,
-	     " -quiet              don't warn about duplicates\n");
-    fprintf (stderr, 
-	     " -Dname[=value], -Uname, -Idirectory    %s\n",
-	     "passed to preprocessor");
-    fprintf (stderr, 
-	     "\n");
-    fprintf (stderr,
-	     "A - or no input filename represents stdin.\n");  
+	     "usage:  %s [-options ...] [filename]\n\n"
+	     "where options include:\n"
+	     " -display host:dpy   display to use\n"
+	     " -all                do all resources [default]\n"
+	     " -global             do screen-independent resources\n"
+	     " -screen             do screen-specific resources for one screen\n"
+	     " -screens            do screen-specific resources for all screens\n"
+	     " -n                  show but don't do changes\n"
+	     " -cpp filename       preprocessor to use [%s]\n"
+	     " -nocpp              do not use a preprocessor\n"
+	     " -query              query resources\n"
+	     " -load               load resources from file [default]\n"
+	     " -override           add in resources from file\n"
+	     " -merge              merge resources from file & sort\n"
+	     " -edit filename      edit resources into file\n"
+	     " -backup string      backup suffix for -edit [%s]\n"
+	     " -symbols            show preprocessor symbols\n"
+	     " -remove             remove resources\n"
+	     " -retain             avoid server reset (avoid using this)\n"
+	     " -quiet              don't warn about duplicates\n"
+	     " -Dname[=value], -Uname, -Idirectory    passed to preprocessor\n"
+	     "\n"
+	     "A - or no input filename represents stdin.\n",
+	     ProgramName, CPP, BACKUP_SUFFIX);
     exit (1);
 }
 
