@@ -26,6 +26,7 @@ AC_INIT([xrdb], [1.0.7],
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], [xrdb])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
+AC_USE_SYSTEM_EXTENSIONS
 
 # Initialize Automake
 AM_INIT_AUTOMAKE([foreign dist-bzip2])
@@ -37,7 +38,7 @@ m4_ifndef([XORG_MACROS_VERSION],
 XORG_MACROS_VERSION(1.8)
 XORG_DEFAULT_OPTIONS
 
-AC_CHECK_FUNCS([mkstemp])
+AC_CHECK_FUNCS([mkstemp asprintf])
 
 # Find MAXHOSTNAMELEN definition
 # Common hidey holes:

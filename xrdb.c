@@ -148,6 +148,48 @@ static void Process ( int scrno, Bool doScreen, Bool execute );
 static void ShuffleEntries ( Entries *db, Entries *dbs, int num );
 static void ReProcess ( int scrno, Bool doScreen );
 
+#ifndef HAVE_ASPRINTF
+/* sprintf variant found in newer libc's which allocates string to print to */
+static int _X_ATTRIBUTE_PRINTF(2,3)
+asprintf(char ** ret, const char *format, ...)
+{
+    char buf[256];
+    int len;
+    va_list ap;
+
+    va_start(ap, format);
+    len = vsnprintf(buf, sizeof(buf), format, ap);
+    va_end(ap);
+
+    if (len < 0)
+	return -1;
+
+    if (len < sizeof(buf))
+    {
+	*ret = strdup(buf);
+    }
+    else
+    {
+	*ret = malloc(len + 1); /* snprintf doesn't count trailing '\0' */
+	if (*ret != NULL)
+	{
+	    va_start(ap, format);
+	    len = vsnprintf(*ret, len + 1, format, ap);
+	    va_end(ap);
+	    if (len < 0) {
+		free(*ret);
+		*ret = NULL;
+	    }
+	}
+    }
+
+    if (*ret == NULL)
+	return -1;
+
+    return len;
+}
+#endif /* HAVE_ASPRINTF */
+
 static void 
 InitBuffer(Buffer *b)
 {
@@ -1162,13 +1204,9 @@ Process(int scrno, Bool doScreen, Bool execute)
 	    fprintf(input, "\n#include \"%s\"\n", filename);
 	    fclose(input);
 	    (void) mktemp(tmpname3);
-	    if((cmd = (char *)
-		malloc(strlen(cpp_program) + strlen(includes.val) +
-		       1 + strlen(tmpname2) + 3 + strlen(tmpname3) + 1)) ==
-	       NULL)
+	    if (asprintf(&cmd, "%s%s %s > %s", cpp_program, includes.val,
+			 tmpname2, tmpname3) == -1)
 		fatal("%s: Out of memory\n", ProgramName);
-	    sprintf(cmd, "%s%s %s > %s", cpp_program, includes.val,
-		    tmpname2, tmpname3);
 	    if (system(cmd) < 0)
 		fatal("%s: cannot run '%s'\n", ProgramName, cmd);
 	    free(cmd);
@@ -1181,11 +1219,8 @@ Process(int scrno, Bool doScreen, Bool execute)
 	    fprintf(stdin, "\n#include \"%s\"\n", filename);
 	    fflush(stdin);
 	    fseek(stdin, 0, 0);
-	    if((cmd = (char *)
-		malloc(strlen(cpp_program) + strlen(includes.val) + 1)) ==
-	       NULL)
+	    if (asprintf(&cmd, "%s%s", cpp_program, includes.val) == -1)
 		fatal("%s: Out of memory\n", ProgramName);
-	    sprintf(cmd, "%s%s", cpp_program, includes.val);
 	    if (!(input = popen(cmd, "r")))
 		fatal("%s: cannot run '%s'\n", ProgramName, cmd);
 	    free(cmd);
@@ -1199,31 +1234,20 @@ Process(int scrno, Bool doScreen, Bool execute)
 	if (cpp_program) {
 #ifdef WIN32
 	    (void) mktemp(tmpname3);
-	    if((cmd = (char *)
-		malloc(strlen(cpp_program) + strlen(includes.val) +
-		       1 + strlen(defines.val) + 1 +
-		       strlen(filename ? filename : "") + 3 +
-		       strlen(tmpname3) + 1)) ==
-	       NULL)
+	    if (asprintf(&cmd, "%s%s %s %s > %s", cpp_program,
+			 includes.val, defines.val,
+			 filename ? filename : "", tmpname3) == -1)
 		fatal("%s: Out of memory\n", ProgramName);
-	    sprintf(cmd, "%s%s %s %s > %s", cpp_program,
-		    includes.val, defines.val,
-		    filename ? filename : "", tmpname3);
 	    if (system(cmd) < 0)
 		fatal("%s: cannot run '%s'\n", ProgramName, cmd);
 	    free(cmd);
 	    if (!(input = fopen(tmpname3, "r")))
 		fatal("%s: can't open file '%s'\n", ProgramName, tmpname3);
 #else
-	    if((cmd = (char *)
-		malloc(strlen(cpp_program) + strlen(includes.val) + 1 +
-		       strlen(defines.val) + 1 +
-		       strlen(filename ? filename : "") + 1)) ==
-	       NULL)
+	    if (asprintf(&cmd, "%s%s %s %s", cpp_program,
+			 includes.val, defines.val,
+			 filename ? filename : "") == -1)
 		fatal("%s: Out of memory\n", ProgramName);
-	    sprintf(cmd, "%s%s %s %s", cpp_program,
-		    includes.val, defines.val,
-		    filename ? filename : "");
 	    if (!(input = popen(cmd, "r")))
 		fatal("%s: cannot run '%s'\n", ProgramName, cmd);
 	    free(cmd);
