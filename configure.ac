@@ -72,7 +72,7 @@ fi
 # xrdb needs to know where to find cpp at runtime - previously set as CppCmd
 # in Imake config files for each OS
 AC_ARG_WITH([cpp], 
-	AC_HELP_STRING([--with-cpp=path],
+	AS_HELP_STRING([--with-cpp=path],
 		       [comma-separated list of paths to cpp command for xrdb to use at runtime]), 
 	[AC_MSG_CHECKING(for cpp)
 	CPP_PATH=$withval
