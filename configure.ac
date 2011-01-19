@@ -85,4 +85,7 @@ AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 # Checks for pkg-config packages
 PKG_CHECK_MODULES(XRDB, xmuu x11)
 
-AC_OUTPUT([Makefile])
+AC_CONFIG_FILES([
+	Makefile
+	man/Makefile])
+AC_OUTPUT
