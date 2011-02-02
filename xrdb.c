@@ -798,6 +798,23 @@ main(int argc, char *argv[])
     /* initialize the includes String struct */
     addstring(&includes, "");
 
+    /* Pick the default cpp to use.  This needs to be done before
+     * we parse the command line in order to honor -nocpp which sets
+     * it back to NULL.
+     */
+    if (cpp_program == NULL) {
+	int number_of_elements
+	    = (sizeof cpp_locations) / (sizeof cpp_locations[0]);
+	int j;
+
+	for (j = 0; j < number_of_elements; j++) {
+	    if (access(cpp_locations[j], X_OK) == 0) {
+		cpp_program = cpp_locations[j];
+		break;
+	    }
+	} 
+    }
+
     /* needs to be replaced with XrmParseCommand */
 
     for (i = 1; i < argc; i++) {
@@ -892,19 +909,6 @@ main(int argc, char *argv[])
 	    filename = arg;
     }							/* end for */
 
-    /* If cpp to use was not specified, check for ones in default locations */
-    if (cpp_program == NULL) {
-	int number_of_elements
-	    = (sizeof cpp_locations) / (sizeof cpp_locations[0]);
-	int j;
-
-	for (j = 0; j < number_of_elements; j++) {
-	    if (access(cpp_locations[j], X_OK) == 0) {
-		cpp_program = cpp_locations[j];
-		break;
-	    }
-	} 
-    }
 #ifndef WIN32
     while ((i = open("/dev/null", O_RDONLY)) < 3)
 	; /* make sure later freopen won't clobber things */
