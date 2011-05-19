@@ -743,7 +743,7 @@ Syntax (void)
 	     " -Dname[=value], -Uname, -Idirectory    passed to preprocessor\n"
 	     "\n"
 	     "A - or no input filename represents stdin.\n",
-	     ProgramName, CPP, BACKUP_SUFFIX);
+	     ProgramName, cpp_program ? cpp_program : "", BACKUP_SUFFIX);
     exit (1);
 }
 
