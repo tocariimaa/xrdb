@@ -420,7 +420,7 @@ AddDef(String *buff, char *title, char *value)
 #ifdef PATHETICCPP
     if (need_real_defines) {
 	addstring(buff, "\n#define ");
-	addstring(buff, title);
+	addtokstring(buff, title);
 	if (value && (value[0] != '\0')) {
 	    addstring(buff, " ");
 	    addstring(buff, value);
