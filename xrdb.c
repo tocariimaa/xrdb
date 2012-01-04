@@ -120,9 +120,9 @@ static char *filename = NULL;
 #ifdef PATHETICCPP
 static Bool need_real_defines = False;
 static char tmpname2[32];
+#endif
 #ifdef WIN32
 static char tmpname3[32];
-#endif
 #endif
 static int oper = OPLOAD;
 static char *editFile = NULL;
