@@ -605,6 +605,8 @@ static char *ClassNames[] = {
     "DirectColor"
 };
 
+#define NUM_CLASS_NAMES (int)(sizeof(ClassNames) / sizeof(ClassNames[0]))
+
 static void
 DoScreenDefines(Display *display, int scrno, String *defs)
 {
@@ -625,9 +627,16 @@ DoScreenDefines(Display *display, int scrno, String *defs)
     AddNum(defs, "Y_RESOLUTION", Resolution(screen->height,screen->mheight));
     AddNum(defs, "PLANES", DisplayPlanes(display, scrno));
     AddNum(defs, "BITS_PER_RGB", visual->bits_per_rgb);
-    AddDefQ(defs, "CLASS", ClassNames[visual->class]);
-    snprintf(name, sizeof(name), "CLASS_%s", ClassNames[visual->class]);
-    AddNum(defs, name, (int)visual->visualid);
+    if (visual->class >= 0 && visual->class < NUM_CLASS_NAMES) {
+	AddDefQ(defs, "CLASS", ClassNames[visual->class]);
+	snprintf(name, sizeof(name), "CLASS_%s", ClassNames[visual->class]);
+	AddNum(defs, name, (int)visual->visualid);
+    }
+    else {
+	fprintf(stderr,
+		"%s: unknown visual type %d for default visual id 0x%lx\n",
+		ProgramName, visual->class, visual->visualid);
+    }
     switch(visual->class) {
 	case StaticColor:
 	case PseudoColor:
@@ -643,9 +652,16 @@ DoScreenDefines(Display *display, int scrno, String *defs)
 		break;
 	}
 	if (j < 0) {
-	    snprintf(name, sizeof(name), "CLASS_%s_%d",
-		    ClassNames[vinfos[i].class], vinfos[i].depth);
-	    AddNum(defs, name, (int)vinfos[i].visualid);
+	    if (vinfos[i].class >= 0 && vinfos[i].class < NUM_CLASS_NAMES) {
+		snprintf(name, sizeof(name), "CLASS_%s_%d",
+			 ClassNames[vinfos[i].class], vinfos[i].depth);
+		AddNum(defs, name, (int)vinfos[i].visualid);
+	    }
+	    else {
+		fprintf(stderr,
+			"%s: unknown visual type %d for visual id 0x%lx\n",
+			ProgramName, vinfos[i].class, vinfos[i].visualid);
+	    }
 	}
     }
     XFree((char *)vinfos);
