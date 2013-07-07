@@ -140,7 +140,7 @@ static Display *dpy;
 static Buffer buffer;
 static Entries newDB;
 
-static void fatal(const char *, ...);
+static void fatal(const char *, ...) _X_ATTRIBUTE_PRINTF(1,2) _X_NORETURN;
 static void addstring ( String *arg, const char *s );
 static void addescapedstring ( String *arg, const char *s );
 static void addtokstring ( String *arg, const char *s );
@@ -729,7 +729,7 @@ cleanup:
     }
 }
 
-static void
+static void _X_NORETURN
 Syntax (void)
 {
     fprintf (stderr,
