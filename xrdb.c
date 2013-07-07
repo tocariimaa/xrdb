@@ -192,7 +192,7 @@ asprintf(char ** ret, const char *format, ...)
 }
 #endif /* HAVE_ASPRINTF */
 
-static void 
+static void
 InitBuffer(Buffer *b)
 {
     b->room = INIT_BUFFER_SIZE;
@@ -201,14 +201,14 @@ InitBuffer(Buffer *b)
 }
 
 #ifdef notyet
-static void 
+static void
 FreeBuffer(Buffer *b)
 {
     free(b->buff);
 }
 #endif
 
-static void 
+static void
 AppendToBuffer(Buffer *b, const char *str, int len)
 {
     while (b->used + len > b->room) {
@@ -219,7 +219,7 @@ AppendToBuffer(Buffer *b, const char *str, int len)
     b->used += len;
 }
 
-static void 
+static void
 InitEntries(Entries *e)
 {
     e->room = INIT_ENTRY_SIZE;
@@ -227,7 +227,7 @@ InitEntries(Entries *e)
     e->entry = malloc(INIT_ENTRY_SIZE*sizeof(Entry));
 }
 
-static void 
+static void
 FreeEntries(Entries *e)
 {
     register int i;
@@ -241,7 +241,7 @@ FreeEntries(Entries *e)
     free((char *)e->entry);
 }
 
-static void 
+static void
 AddEntry(Entries *e, Entry *entry)
 {
     register int n;
@@ -250,9 +250,9 @@ AddEntry(Entries *e, Entry *entry)
 	if (!strcmp(e->entry[n].tag, entry->tag)) {
 	    /* overwrite old entry */
 	    if (e->entry[n].lineno && !quiet) {
-		fprintf (stderr, 
+		fprintf (stderr,
 			 "%s:  \"%s\" on line %d overrides entry on line %d\n",
-			 ProgramName, entry->tag, entry->lineno, 
+			 ProgramName, entry->tag, entry->lineno,
 			 e->entry[n].lineno);
 	    }
 	    free(e->entry[n].tag);
@@ -272,13 +272,13 @@ AddEntry(Entries *e, Entry *entry)
 }
 
 
-static int 
+static int
 CompareEntries(const void *e1, const void *e2)
 {
     return strcmp(((const Entry *)e1)->tag, ((const Entry *)e2)->tag);
 }
 
-static void 
+static void
 AppendEntryToBuffer(Buffer *buffer, Entry *entry)
 {
     AppendToBuffer(buffer, entry->tag, strlen(entry->tag));
@@ -310,7 +310,7 @@ FindFirst(const char *string, char dest, int *lines)
     }
 }
 
-static void 
+static void
 GetEntries(Entries *entries, Buffer *buff, int bequiet)
 {
     const char *line, *colon, *temp, *str;
@@ -338,15 +338,15 @@ GetEntries(Entries *entries, Buffer *buff, int bequiet)
 		lineno = dummy - 1;
 	    continue;
 	}
-	for (temp = str; 
-	     *temp && *temp != '\n' && isascii(*temp) && isspace(*temp); 
+	for (temp = str;
+	     *temp && *temp != '\n' && isascii(*temp) && isspace(*temp);
 	     temp++) ;
 	if (!*temp || *temp == '\n') continue;
 
 	colon = FindFirst(str, ':', NULL);
 	if (!colon || colon > line) {
 	    if (!bequiet && !quiet)
-		fprintf (stderr, 
+		fprintf (stderr,
 			 "%s: colon missing on line %d, ignoring line\n",
 			 ProgramName, lineno);
 	    continue;
@@ -388,7 +388,7 @@ GetEntriesString(Entries *entries, char *str)
     }
 }
 
-static void 
+static void
 ReadFile(Buffer *buffer, FILE *input)
 {
 	     char	buf[BUFSIZ + 1];
@@ -515,7 +515,7 @@ AddUndef(String *buff, const char *title)
     addtokstring(buff, title);
 }
 
-static void 
+static void
 DoCmdDefines(String *buff)
 {
     int i;
@@ -536,7 +536,7 @@ DoCmdDefines(String *buff)
     }
 }
 
-static int 
+static int
 Resolution(int pixels, int mm)
 {
     if (mm == 0)
@@ -555,7 +555,7 @@ DoDisplayDefines(Display *display, String *defs, char *host)
     char client[MAXHOSTNAMELEN], server[MAXHOSTNAMELEN], *colon;
     char **extnames;
     int n;
-    
+
     XmuGetHostname(client, MAXHOSTNAMELEN);
     strncpy(server, XDisplayName(host), sizeof(server));
     server[sizeof(server) - 1] = '\0';
@@ -564,7 +564,7 @@ DoDisplayDefines(Display *display, String *defs, char *host)
     colon = strrchr(server, ':');
     n = 0;
     if (colon) {
-	/* remove extra colon if there are exactly two, since it indicates 
+	/* remove extra colon if there are exactly two, since it indicates
 	   DECnet.  Three colons is an IPv6 address ending in :: though. */
 	if ((colon > server) && (*(colon-1) == ':') &&
 	  ( ((colon - 1) == server) || (*(colon-2) != ':') ) ) {
@@ -612,7 +612,7 @@ DoScreenDefines(Display *display, int scrno, String *defs)
     XVisualInfo vinfo, *vinfos;
     int nv, i, j;
     char name[50];
-    
+
     screen = ScreenOfDisplay(display, scrno);
     visual = DefaultVisualOfScreen(screen);
     vinfo.screen = scrno;
@@ -695,7 +695,7 @@ FindEntry(Entries *db, Buffer  *b)
     return NULL;
 }
 
-static void 
+static void
 EditFile(Entries *new, FILE *in, FILE *out)
 {
     Buffer b;
@@ -729,10 +729,10 @@ cleanup:
     }
 }
 
-static void 
+static void
 Syntax (void)
 {
-    fprintf (stderr, 
+    fprintf (stderr,
 	     "usage:  %s [-options ...] [filename]\n\n"
 	     "where options include:\n"
 	     " -display host:dpy   display to use\n"
@@ -765,7 +765,7 @@ Syntax (void)
  * whether or not the given string is an abbreviation of the arg.
  */
 
-static Bool 
+static Bool
 isabbreviation(const char *arg, const char *s, int minslen)
 {
     int arglen;
@@ -804,7 +804,7 @@ addstring(String *arg, const char *s)
     else
 	strcpy(arg->val, s);
     arg->used += strlen(s);
-}   
+}
 
 static void
 addescapedstring(String *arg, const char *s)
@@ -971,7 +971,7 @@ main(int argc, char *argv[])
 		continue;
 	    }
 	    Syntax ();
-	} else if (arg[0] == '=') 
+	} else if (arg[0] == '=')
 	    continue;
 	else
 	    filename = arg;
@@ -1046,11 +1046,11 @@ main(int argc, char *argv[])
 	if (!fp)
 	    fatal("%s: Failed to open temp file: %s\n", ProgramName,
 		  filename);
-	while (fgets(inputbuf, sizeof(inputbuf), stdin) != NULL) 
+	while (fgets(inputbuf, sizeof(inputbuf), stdin) != NULL)
 	    fputs(inputbuf, fp);
 	fclose(fp);
     }
-	
+
     DoDisplayDefines(dpy, &defines, displayname);
     defines_base = defines.used;
     need_newline = (oper == OPQUERY || oper == OPSYMBOLS ||
@@ -1128,7 +1128,7 @@ main(int argc, char *argv[])
 }
 
 
-static void 
+static void
 FormatEntries(Buffer *buffer, Entries *entries)
 {
     register int i;
@@ -1208,7 +1208,7 @@ Process(int scrno, Bool doScreen, Bool execute)
 	(void) mktemp(template);
 	output = fopen(template, "w");
 #else
-	{ 
+	{
 	int fd = mkstemp(template);
 	output = fdopen(fd, "w");
 	}
