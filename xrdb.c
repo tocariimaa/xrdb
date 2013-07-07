@@ -144,8 +144,8 @@ static void fatal(const char *, ...) _X_ATTRIBUTE_PRINTF(1,2) _X_NORETURN;
 static void addstring ( String *arg, const char *s );
 static void addescapedstring ( String *arg, const char *s );
 static void addtokstring ( String *arg, const char *s );
-static void FormatEntries ( Buffer *buffer, Entries *entries );
-static void StoreProperty ( Display *dpy, Window root, Atom res_prop );
+static void FormatEntries ( Buffer *b, Entries *entries );
+static void StoreProperty ( Display *display, Window root, Atom res_prop );
 static void Process ( int scrno, Bool doScreen, Bool execute );
 static void ShuffleEntries ( Entries *db, Entries *dbs, int num );
 static void ReProcess ( int scrno, Bool doScreen );
@@ -279,12 +279,12 @@ CompareEntries(const void *e1, const void *e2)
 }
 
 static void
-AppendEntryToBuffer(Buffer *buffer, Entry *entry)
+AppendEntryToBuffer(Buffer *b, Entry *entry)
 {
-    AppendToBuffer(buffer, entry->tag, strlen(entry->tag));
-    AppendToBuffer(buffer, ":\t", 2);
-    AppendToBuffer(buffer, entry->value, strlen(entry->value));
-    AppendToBuffer(buffer, "\n", 1);
+    AppendToBuffer(b, entry->tag, strlen(entry->tag));
+    AppendToBuffer(b, ":\t", 2);
+    AppendToBuffer(b, entry->value, strlen(entry->value));
+    AppendToBuffer(b, "\n", 1);
 }
 
 /*
@@ -389,12 +389,12 @@ GetEntriesString(Entries *entries, char *str)
 }
 
 static void
-ReadFile(Buffer *buffer, FILE *input)
+ReadFile(Buffer *b, FILE *input)
 {
 	     char	buf[BUFSIZ + 1];
     register int	bytes;
 
-    buffer->used = 0;
+    b->used = 0;
     while (!feof(input) && (bytes = fread(buf, 1, BUFSIZ, input)) > 0) {
 #ifdef WIN32
 	char *p;
@@ -406,9 +406,9 @@ ReadFile(Buffer *buffer, FILE *input)
 	    }
 	}
 #endif
-	AppendToBuffer(buffer, buf, bytes);
+	AppendToBuffer(b, buf, bytes);
     }
-    AppendToBuffer(buffer, "", 1);
+    AppendToBuffer(b, "", 1);
 }
 
 static void
@@ -1129,11 +1129,11 @@ main(int argc, char *argv[])
 
 
 static void
-FormatEntries(Buffer *buffer, Entries *entries)
+FormatEntries(Buffer *b, Entries *entries)
 {
     register int i;
 
-    buffer->used = 0;
+    b->used = 0;
     if (!entries->used)
 	return;
     if (oper == OPMERGE)
@@ -1141,30 +1141,30 @@ FormatEntries(Buffer *buffer, Entries *entries)
 	      CompareEntries);
     for (i = 0; i < entries->used; i++) {
 	if (entries->entry[i].usable)
-	    AppendEntryToBuffer(buffer, &entries->entry[i]);
+	    AppendEntryToBuffer(b, &entries->entry[i]);
     }
 }
 
 static void
-StoreProperty(Display *dpy, Window root, Atom res_prop)
+StoreProperty(Display *display, Window root, Atom res_prop)
 {
     int len = buffer.used;
     int mode = PropModeReplace;
     unsigned char *buf = (unsigned char *)buffer.buff;
-    int max = (XMaxRequestSize(dpy) << 2) - 28;
+    int max = (XMaxRequestSize(display) << 2) - 28;
 
     if (len > max) {
-	XGrabServer(dpy);
+	XGrabServer(display);
 	do {
-	    XChangeProperty(dpy, root, res_prop, XA_STRING, 8, mode, buf, max);
+	    XChangeProperty(display, root, res_prop, XA_STRING, 8, mode, buf, max);
 	    buf += max;
 	    len -= max;
 	    mode = PropModeAppend;
 	} while (len > max);
     }
-    XChangeProperty(dpy, root, res_prop, XA_STRING, 8, mode, buf, len);
+    XChangeProperty(display, root, res_prop, XA_STRING, 8, mode, buf, len);
     if (mode != PropModeReplace)
-	XUngrabServer(dpy);
+	XUngrabServer(display);
 }
 
 static void
