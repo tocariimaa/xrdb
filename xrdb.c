@@ -197,7 +197,7 @@ InitBuffer(Buffer *b)
 {
     b->room = INIT_BUFFER_SIZE;
     b->used = 0;
-    b->buff = (char *)malloc(INIT_BUFFER_SIZE*sizeof(char));
+    b->buff = malloc(INIT_BUFFER_SIZE*sizeof(char));
 }
 
 #ifdef notyet
@@ -212,7 +212,7 @@ static void
 AppendToBuffer(Buffer *b, const char *str, int len)
 {
     while (b->used + len > b->room) {
-	b->buff = (char *)realloc(b->buff, 2*b->room*(sizeof(char)));
+	b->buff = realloc(b->buff, 2*b->room*(sizeof(char)));
 	b->room *= 2;
     }
     strncpy(b->buff + b->used, str, len);
@@ -224,7 +224,7 @@ InitEntries(Entries *e)
 {
     e->room = INIT_ENTRY_SIZE;
     e->used = 0;
-    e->entry = (Entry *)malloc(INIT_ENTRY_SIZE*sizeof(Entry));
+    e->entry = malloc(INIT_ENTRY_SIZE*sizeof(Entry));
 }
 
 static void 
@@ -264,8 +264,7 @@ AddEntry(Entries *e, Entry *entry)
     }
 
     if (e->used == e->room) {
-	e->entry = (Entry *)realloc((char *)e->entry,
-				    2*e->room*(sizeof(Entry)));
+	e->entry = realloc(e->entry, 2 * e->room * (sizeof(Entry)));
 	e->room *= 2;
     }
     entry->usable = True;
@@ -359,7 +358,7 @@ GetEntries(Entries *entries, Buffer *buff, int bequiet)
 	length = colon - str;
 	while (length && (str[length-1] == ' ' || str[length-1] == '\t'))
 	    length--;
-	entry.tag = (char *)malloc(length + 1);
+	entry.tag = malloc(length + 1);
 	strncpy(entry.tag, str, length);
 	entry.tag[length] = '\0';
 
@@ -368,7 +367,7 @@ GetEntries(Entries *entries, Buffer *buff, int bequiet)
 	while (*colon == ' ' || *colon == '\t')
 	    colon++;
 	length = line - colon;
-	entry.value = (char *)malloc(length + 1);
+	entry.value = malloc(length + 1);
 	strncpy(entry.value, colon, length);
 	entry.value[length] = '\0';
 	entry.lineno = bequiet ? 0 : lineno;
@@ -793,9 +792,9 @@ addstring(String *arg, const char *s)
 {
     if(arg->used + strlen(s) + 1 >= arg->room) {
 	if(arg->val)
-	    arg->val = (char *)realloc(arg->val, arg->room + CHUNK_SIZE);
+	    arg->val = realloc(arg->val, arg->room + CHUNK_SIZE);
 	else
-	    arg->val = (char *)malloc(arg->room + CHUNK_SIZE);	    
+	    arg->val = malloc(arg->room + CHUNK_SIZE);
 	if(arg->val == NULL)
 	    fatal("%s: Not enough memory\n", ProgramName);
 	arg->room += CHUNK_SIZE;
@@ -1091,7 +1090,7 @@ main(int argc, char *argv[])
     else {
 	Entries *dbs;
 
-	dbs = (Entries *)malloc(ScreenCount(dpy) * sizeof(Entries));
+	dbs = malloc(ScreenCount(dpy) * sizeof(Entries));
 	for (i = 0; i < ScreenCount(dpy); i++) {
 	    Process(i, True, False);
 	    dbs[i] = newDB;
@@ -1351,7 +1350,7 @@ ShuffleEntries(Entries *db, Entries *dbs, int num)
     Entries cur, cmp;
     char *curtag, *curvalue;
 
-    hits = (int *)malloc(num * sizeof(int));
+    hits = malloc(num * sizeof(int));
     cur = dbs[0];
     for (i = 0; i < cur.used; i++) {
 	curtag = cur.entry[i].tag;
