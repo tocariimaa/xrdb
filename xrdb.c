@@ -128,7 +128,7 @@ static int oper = OPLOAD;
 static char *editFile = NULL;
 static const char *cpp_program = NULL;
 static const char* const cpp_locations[] = { CPP };
-static char *backup_suffix = BACKUP_SUFFIX;
+static const char *backup_suffix = BACKUP_SUFFIX;
 static Bool dont_execute = False;
 static String defines;
 static int defines_base;
@@ -140,7 +140,7 @@ static Display *dpy;
 static Buffer buffer;
 static Entries newDB;
 
-static void fatal(char *, ...);
+static void fatal(const char *, ...);
 static void addstring ( String *arg, const char *s );
 static void addescapedstring ( String *arg, const char *s );
 static void addtokstring ( String *arg, const char *s );
@@ -209,7 +209,7 @@ FreeBuffer(Buffer *b)
 #endif
 
 static void 
-AppendToBuffer(Buffer *b, char *str, int len)
+AppendToBuffer(Buffer *b, const char *str, int len)
 {
     while (b->used + len > b->room) {
 	b->buff = (char *)realloc(b->buff, 2*b->room*(sizeof(char)));
@@ -276,7 +276,7 @@ AddEntry(Entries *e, Entry *entry)
 static int 
 CompareEntries(const void *e1, const void *e2)
 {
-    return strcmp(((Entry *)e1)->tag, ((Entry *)e2)->tag);
+    return strcmp(((const Entry *)e1)->tag, ((const Entry *)e2)->tag);
 }
 
 static void 
@@ -292,8 +292,8 @@ AppendEntryToBuffer(Buffer *buffer, Entry *entry)
  * Return the position of the first unescaped occurrence of dest in string.
  * If lines is non-null, return the number of newlines skipped over.
  */
-static char *
-FindFirst(char *string, char dest, int *lines)
+static const char *
+FindFirst(const char *string, char dest, int *lines)
 {
     if (lines)
 	*lines = 0;
@@ -314,7 +314,7 @@ FindFirst(char *string, char dest, int *lines)
 static void 
 GetEntries(Entries *entries, Buffer *buff, int bequiet)
 {
-    register char *line, *colon, *temp, *str;
+    const char *line, *colon, *temp, *str;
     Entry entry;
     register int length;
     int lineno = 0;
@@ -359,20 +359,18 @@ GetEntries(Entries *entries, Buffer *buff, int bequiet)
 	length = colon - str;
 	while (length && (str[length-1] == ' ' || str[length-1] == '\t'))
 	    length--;
-	temp = (char *)malloc(length + 1);
-	strncpy(temp, str, length);
-	temp[length] = '\0';
-	entry.tag = temp;
+	entry.tag = (char *)malloc(length + 1);
+	strncpy(entry.tag, str, length);
+	entry.tag[length] = '\0';
 
 	/* strip leading and trailing blanks from value and store result */
 	colon++;
 	while (*colon == ' ' || *colon == '\t')
 	    colon++;
 	length = line - colon;
-	temp = (char *)malloc(length + 1);
-	strncpy(temp, colon, length);
-	temp[length] = '\0';
-	entry.value = temp;
+	entry.value = (char *)malloc(length + 1);
+	strncpy(entry.value, colon, length);
+	entry.value[length] = '\0';
 	entry.lineno = bequiet ? 0 : lineno;
 
 	AddEntry(entries, &entry);
@@ -415,7 +413,7 @@ ReadFile(Buffer *buffer, FILE *input)
 }
 
 static void
-AddDef(String *buff, char *title, char *value)
+AddDef(String *buff, const char *title, const char *value)
 {
 #ifdef PATHETICCPP
     if (need_real_defines) {
@@ -443,13 +441,13 @@ AddDef(String *buff, char *title, char *value)
 }
 
 static void
-AddSimpleDef(String *buff, char *title)
+AddSimpleDef(String *buff, const char *title)
 {
     AddDef(buff, title, (char *)NULL);
 }
 
 static void
-AddDefQ(String *buff, char *title, char *value)
+AddDefQ(String *buff, const char *title, const char *value)
 {
 #ifdef PATHETICCPP
     if (need_real_defines)
@@ -466,7 +464,7 @@ AddDefQ(String *buff, char *title, char *value)
 }
 
 static void
-AddNum(String *buff, char *title, int value)
+AddNum(String *buff, const char *title, int value)
 {
     char num[20];
     snprintf(num, sizeof(num), "%d", value);
@@ -474,7 +472,7 @@ AddNum(String *buff, char *title, int value)
 }
 
 static void
-AddDefTok(String *buff, char *prefix, char *title)
+AddDefTok(String *buff, const char *prefix, char *title)
 {
     char name[512];
 
@@ -483,7 +481,7 @@ AddDefTok(String *buff, char *prefix, char *title)
 }
 
 static void
-AddDefHostname(String *buff, char *title, char *value)
+AddDefHostname(String *buff, const char *title, const char *value)
 {
     char *s;
     char name[512];
@@ -499,7 +497,7 @@ AddDefHostname(String *buff, char *title, char *value)
 }
 
 static void
-AddUndef(String *buff, char *title)
+AddUndef(String *buff, const char *title)
 {
 #ifdef PATHETICCPP
     if (need_real_defines) {
@@ -596,7 +594,7 @@ DoDisplayDefines(Display *display, String *defs, char *host)
     XFreeExtensionList(extnames);
 }
 
-static char *ClassNames[] = {
+static const char *ClassNames[] = {
     "StaticGray",
     "GrayScale",
     "StaticColor",
@@ -769,7 +767,7 @@ Syntax (void)
  */
 
 static Bool 
-isabbreviation(char *arg, char *s, int minslen)
+isabbreviation(const char *arg, const char *s, int minslen)
 {
     int arglen;
     int slen;
@@ -1411,7 +1409,7 @@ ReProcess(int scrno, Bool doScreen)
 }
 
 static void
-fatal(char *msg, ...)
+fatal(const char *msg, ...)
 {
     va_list args;
 
