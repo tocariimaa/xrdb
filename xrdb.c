@@ -1250,8 +1250,18 @@ Process(int scrno, Bool doScreen, Bool execute)
 		      template, editFile);
 	}
     } else {
+	const char *cpp_addflags = "";
+
 	if (oper == OPMERGE || oper == OPOVERRIDE)
 	    GetEntriesString(&newDB, xdefs);
+
+	/* Add -P flag only if using cpp, not another preprocessor */
+	if (cpp_program) {
+	    const char *cp = strstr(cpp_program, "cpp");
+
+	    if (cp && ((cp[3] == '\0') || cp[3] == ' '))
+		cpp_addflags = "-P";
+	}
 #ifdef PATHETICCPP
 	if (need_real_defines) {
 #ifdef WIN32
@@ -1261,8 +1271,8 @@ Process(int scrno, Bool doScreen, Bool execute)
 	    fprintf(input, "\n#include \"%s\"\n", filename);
 	    fclose(input);
 	    (void) mktemp(tmpname3);
-	    if (asprintf(&cmd, "%s -P%s %s > %s", cpp_program, includes.val,
-			 tmpname2, tmpname3) == -1)
+	    if (asprintf(&cmd, "%s %s %s %s > %s", cpp_program, cpp_addflags,
+			 includes.val, tmpname2, tmpname3) == -1)
 		fatal("%s: Out of memory\n", ProgramName);
 	    if (system(cmd) < 0)
 		fatal("%s: cannot run '%s'\n", ProgramName, cmd);
@@ -1276,7 +1286,8 @@ Process(int scrno, Bool doScreen, Bool execute)
 	    fprintf(stdin, "\n#include \"%s\"\n", filename);
 	    fflush(stdin);
 	    fseek(stdin, 0, 0);
-	    if (asprintf(&cmd, "%s -P%s", cpp_program, includes.val) == -1)
+	    if (asprintf(&cmd, "%s %s %s", cpp_program, cpp_addflags,
+			 includes.val) == -1)
 		fatal("%s: Out of memory\n", ProgramName);
 	    if (!(input = popen(cmd, "r")))
 		fatal("%s: cannot run '%s'\n", ProgramName, cmd);
@@ -1291,8 +1302,8 @@ Process(int scrno, Bool doScreen, Bool execute)
 	if (cpp_program) {
 #ifdef WIN32
 	    (void) mktemp(tmpname3);
-	    if (asprintf(&cmd, "%s -P%s %s %s > %s", cpp_program,
-			 includes.val, defines.val,
+	    if (asprintf(&cmd, "%s %s %s %s %s > %s", cpp_program,
+			 cpp_addflags, includes.val, defines.val,
 			 filename ? filename : "", tmpname3) == -1)
 		fatal("%s: Out of memory\n", ProgramName);
 	    if (system(cmd) < 0)
@@ -1301,8 +1312,8 @@ Process(int scrno, Bool doScreen, Bool execute)
 	    if (!(input = fopen(tmpname3, "r")))
 		fatal("%s: can't open file '%s'\n", ProgramName, tmpname3);
 #else
-	    if (asprintf(&cmd, "%s -P%s %s %s", cpp_program,
-			 includes.val, defines.val,
+	    if (asprintf(&cmd, "%s %s %s %s %s", cpp_program,
+			 cpp_addflags, includes.val, defines.val,
 			 filename ? filename : "") == -1)
 		fatal("%s: Out of memory\n", ProgramName);
 	    if (!(input = popen(cmd, "r")))
