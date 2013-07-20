@@ -738,6 +738,8 @@ Syntax (void)
     fprintf (stderr,
 	     "usage:  %s [-options ...] [filename]\n\n"
 	     "where options include:\n"
+	     " -help               print this help message\n"
+	     " -version            print the program version\n"
 	     " -display host:dpy   display to use\n"
 	     " -all                do all resources [default]\n"
 	     " -global             do screen-independent resources\n"
@@ -898,6 +900,9 @@ main(int argc, char *argv[])
 	    } else if (isabbreviation ("-help", arg, 2)) {
 		Syntax ();
 		/* doesn't return */
+	    } else if (isabbreviation ("-version", arg, 2)) {
+		printf("%s\n", PACKAGE_STRING);
+		exit(0);
 	    } else if (isabbreviation ("-display", arg, 2)) {
 		if (++i >= argc) Syntax ();
 		displayname = argv[i];

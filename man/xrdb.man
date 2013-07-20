@@ -168,6 +168,10 @@ program accepts the following options:
 This option (or any unsupported option) will cause a brief description of
 the allowable options and parameters to be printed.
 .TP 8
+.B \-version
+This option will cause the xrdb version to be printed and the program to exit
+without performing any other operations.
+.TP 8
 .B \-display \fIdisplay\fP
 This option specifies the X server to be used; see \fIX(__miscmansuffix__)\fP.
 It also specifies the screen to use for the \fI-screen\fP option,
