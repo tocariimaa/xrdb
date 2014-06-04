@@ -89,7 +89,6 @@
 #define OPMERGE 5
 #define OPOVERRIDE 6
 
-#define RESOURCE_PROPERTY_NAME "RESOURCE_MANAGER"
 #define BACKUP_SUFFIX ".bak"		/* for editting */
 
 typedef struct _Entry {
