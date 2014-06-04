@@ -65,12 +65,7 @@
 #define SCREEN_RESOURCES "SCREEN_RESOURCES"
 
 #ifndef CPP
-#ifdef __UNIXOS2__
-/* expected to be in path */
-#define CPP "cpp"
-#else
 #define CPP "/usr/lib/cpp"
-#endif /* __UNIXOS2__ */
 #endif /* CPP */
 
 #define INIT_BUFFER_SIZE 10000
@@ -1012,14 +1007,7 @@ main(int argc, char *argv[])
 	strcpy(tmpname2, "xrdbD_XXXXXX");
 	strcpy(tmpname3, "\\temp\\xrdbD_XXXXXX");
 #else
-#ifdef __UNIXOS2__
-	{ char *tmpdir=getenv("TMP");
-	  if (!tmpdir) tmpdir="/";
-	  sprintf(tmpname2, "%s/xrdbD_XXXXXX",tmpdir);
-	}
-#else
 	strcpy(tmpname2, "/tmp/xrdbD_XXXXXX");
-#endif
 #endif
 	(void) mktemp(tmpname2);
     }
@@ -1037,14 +1025,7 @@ main(int argc, char *argv[])
 #ifdef WIN32
 	strcpy(tmpname, "\\temp\\xrdb_XXXXXX");
 #else
-#ifdef __UNIXOS2__
-	{ char *tmpdir=getenv("TMP");
-	  if (!tmpdir) tmpdir="/";
-	  sprintf(tmpname, "%s/xrdb_XXXXXX",tmpdir);
-	}
-#else
 	strcpy(tmpname, "/tmp/xrdb_XXXXXX");
-#endif
 #endif
 #ifndef HAVE_MKSTEMP
 	(void) mktemp(tmpname);
