@@ -134,7 +134,7 @@ static Display *dpy;
 static Buffer buffer;
 static Entries newDB;
 
-static void fatal(const char *, ...) _X_ATTRIBUTE_PRINTF(1,2) _X_NORETURN;
+static void fatal(const char *, ...) _X_ATTRIBUTE_PRINTF(1,2) _X_NORETURN _X_COLD;
 static void addstring ( String *arg, const char *s );
 static void addescapedstring ( String *arg, const char *s );
 static void addtokstring ( String *arg, const char *s );
@@ -726,9 +726,12 @@ cleanup:
     }
 }
 
-static void _X_NORETURN
-Syntax (void)
+static void _X_NORETURN  _X_COLD
+Syntax (const char *errmsg)
 {
+    if (errmsg != NULL)
+        fprintf (stderr, "%s: %s\n", ProgramName, errmsg);
+
     fprintf (stderr,
 	     "usage:  %s [-options ...] [filename]\n\n"
 	     "where options include:\n"
@@ -892,21 +895,21 @@ main(int argc, char *argv[])
 		filename = NULL;
 		continue;
 	    } else if (isabbreviation ("-help", arg, 2)) {
-		Syntax ();
+		Syntax (NULL);
 		/* doesn't return */
 	    } else if (isabbreviation ("-version", arg, 2)) {
 		printf("%s\n", PACKAGE_STRING);
 		exit(0);
 	    } else if (isabbreviation ("-display", arg, 2)) {
-		if (++i >= argc) Syntax ();
+		if (++i >= argc) Syntax ("-display requires an argument");
 		displayname = argv[i];
 		continue;
 	    } else if (isabbreviation ("-geometry", arg, 3)) {
-		if (++i >= argc) Syntax ();
+		if (++i >= argc) Syntax ("-geometry requires an argument");
 		/* ignore geometry */
 		continue;
 	    } else if (isabbreviation ("-cpp", arg, 2)) {
-		if (++i >= argc) Syntax ();
+		if (++i >= argc) Syntax ("-cpp requires an argument");
 		cpp_program = argv[i];
 		continue;
 	    } else if (!strcmp ("-n", arg)) {
@@ -934,12 +937,12 @@ main(int argc, char *argv[])
 		oper = OPREMOVE;
 		continue;
 	    } else if (isabbreviation ("-edit", arg, 2)) {
-		if (++i >= argc) Syntax ();
+		if (++i >= argc) Syntax ("-edit requires an argument");
 		oper = OPEDIT;
 		editFile = argv[i];
 		continue;
 	    } else if (isabbreviation ("-backup", arg, 2)) {
-		if (++i >= argc) Syntax ();
+		if (++i >= argc) Syntax ("-backup requires an argument");
 		backup_suffix = argv[i];
 		continue;
 	    } else if (isabbreviation ("-all", arg, 2)) {
@@ -979,7 +982,9 @@ main(int argc, char *argv[])
 		}
 		continue;
 	    }
-	    Syntax ();
+	    fprintf (stderr, "%s: unrecognized argument '%s'\n",
+		     ProgramName, arg);
+	    Syntax (NULL);
 	} else if (arg[0] == '=')
 	    continue;
 	else

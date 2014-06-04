@@ -82,7 +82,7 @@ CPP_PATH=`echo ${CPP_PATH} | sed 's/,/\\",\\"/g'`
 AC_DEFINE_UNQUOTED([CPP], "$CPP_PATH", [Path to CPP program])
 
 # Checks for pkg-config packages
-PKG_CHECK_MODULES(XRDB, [xmuu x11 xproto >= 7.0.17])
+PKG_CHECK_MODULES(XRDB, [xmuu x11 xproto >= 7.0.25])
 
 AC_CONFIG_FILES([
 	Makefile
