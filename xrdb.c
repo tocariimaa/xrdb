@@ -98,18 +98,18 @@ typedef struct _Entry {
 } Entry;
 typedef struct _Buffer {
     char *buff;
-    int  room, used;
+    size_t room, used;
 } Buffer;
 typedef struct _Entries {
     Entry *entry;
-    int   room, used;
+    size_t room, used;
 } Entries;
 
 /* dynamically allocated strings */
 #define CHUNK_SIZE 4096
 typedef struct _String {
     char *val;
-    int room, used;
+    size_t room, used;
 } String;
 
 static char *ProgramName;
@@ -130,7 +130,7 @@ static const char* const cpp_locations[] = { CPP };
 static const char *backup_suffix = BACKUP_SUFFIX;
 static Bool dont_execute = False;
 static String defines;
-static int defines_base;
+static size_t defines_base;
 #define MAX_CMD_DEFINES 512
 static char *cmd_defines[MAX_CMD_DEFINES];
 static int num_cmd_defines = 0;
@@ -146,7 +146,7 @@ static void addtokstring ( String *arg, const char *s );
 static void FormatEntries ( Buffer *b, Entries *entries );
 static void StoreProperty ( Display *display, Window root, Atom res_prop );
 static void Process ( int scrno, Bool doScreen, Bool execute );
-static void ShuffleEntries ( Entries *db, Entries *dbs, int num );
+static void ShuffleEntries ( Entries *db, Entries *dbs, unsigned int num );
 static void ReProcess ( int scrno, Bool doScreen );
 
 #ifndef HAVE_ASPRINTF
@@ -208,7 +208,7 @@ FreeBuffer(Buffer *b)
 #endif
 
 static void
-AppendToBuffer(Buffer *b, const char *str, int len)
+AppendToBuffer(Buffer *b, const char *str, size_t len)
 {
     while (b->used + len > b->room) {
 	b->buff = realloc(b->buff, 2*b->room*(sizeof(char)));
@@ -229,7 +229,7 @@ InitEntries(Entries *e)
 static void
 FreeEntries(Entries *e)
 {
-    register int i;
+    size_t i;
 
     for (i = 0; i < e->used; i++) {
 	if (e->entry[i].usable) {
@@ -243,7 +243,7 @@ FreeEntries(Entries *e)
 static void
 AddEntry(Entries *e, Entry *entry)
 {
-    register int n;
+    size_t n;
 
     for (n = 0; n < e->used; n++) {
 	if (!strcmp(e->entry[n].tag, entry->tag)) {
@@ -314,7 +314,7 @@ GetEntries(Entries *entries, Buffer *buff, int bequiet)
 {
     const char *line, *colon, *temp, *str;
     Entry entry;
-    register int length;
+    size_t length;
     int lineno = 0;
     int lines_skipped;
 
@@ -390,8 +390,8 @@ GetEntriesString(Entries *entries, char *str)
 static void
 ReadFile(Buffer *b, FILE *input)
 {
-	     char	buf[BUFSIZ + 1];
-    register int	bytes;
+    char	buf[BUFSIZ + 1];
+    size_t	bytes;
 
     b->used = 0;
     while (!feof(input) && (bytes = fread(buf, 1, BUFSIZ, input)) > 0) {
@@ -669,7 +669,7 @@ DoScreenDefines(Display *display, int scrno, String *defs)
 static Entry *
 FindEntry(Entries *db, Buffer  *b)
 {
-    int i;
+    size_t i;
     register Entry *e;
     Entries phoney;
     Entry entry;
@@ -704,7 +704,7 @@ EditFile(Entries *new, FILE *in, FILE *out)
     char buff[BUFSIZ];
     register Entry *e;
     register char *c;
-    int i;
+    size_t i;
 
     InitBuffer(&b);
     while (in) {
@@ -770,10 +770,10 @@ Syntax (void)
  */
 
 static Bool
-isabbreviation(const char *arg, const char *s, int minslen)
+isabbreviation(const char *arg, const char *s, size_t minslen)
 {
-    int arglen;
-    int slen;
+    size_t arglen;
+    size_t slen;
 
     /* exact match */
     if (!strcmp (arg, s)) return (True);
@@ -1104,7 +1104,7 @@ main(int argc, char *argv[])
     else {
 	Entries *dbs;
 
-	dbs = malloc(ScreenCount(dpy) * sizeof(Entries));
+	dbs = malloc(((unsigned) ScreenCount(dpy)) * sizeof(Entries));
 	for (i = 0; i < ScreenCount(dpy); i++) {
 	    Process(i, True, False);
 	    dbs[i] = newDB;
@@ -1112,7 +1112,7 @@ main(int argc, char *argv[])
 	InitEntries(&newDB);
 	if (oper == OPMERGE || oper == OPOVERRIDE)
 	    GetEntriesString(&newDB, XResourceManagerString(dpy));
-	ShuffleEntries(&newDB, dbs, ScreenCount(dpy));
+	ShuffleEntries(&newDB, dbs, (unsigned) ScreenCount(dpy));
 	if (need_newline)
 	    printf("! screen-independent resources\n");
 	ReProcess(0, False);
@@ -1145,7 +1145,7 @@ main(int argc, char *argv[])
 static void
 FormatEntries(Buffer *b, Entries *entries)
 {
-    register int i;
+    size_t i;
 
     b->used = 0;
     if (!entries->used)
@@ -1162,21 +1162,21 @@ FormatEntries(Buffer *b, Entries *entries)
 static void
 StoreProperty(Display *display, Window root, Atom res_prop)
 {
-    int len = buffer.used;
+    size_t len = buffer.used;
     int mode = PropModeReplace;
     unsigned char *buf = (unsigned char *)buffer.buff;
-    int max = (XMaxRequestSize(display) << 2) - 28;
+    size_t max = ((unsigned) XMaxRequestSize(display) << 2) - 28;
 
     if (len > max) {
 	XGrabServer(display);
 	do {
-	    XChangeProperty(display, root, res_prop, XA_STRING, 8, mode, buf, max);
+	    XChangeProperty(display, root, res_prop, XA_STRING, 8, mode, buf, (int) max);
 	    buf += max;
 	    len -= max;
 	    mode = PropModeAppend;
 	} while (len > max);
     }
-    XChangeProperty(display, root, res_prop, XA_STRING, 8, mode, buf, len);
+    XChangeProperty(display, root, res_prop, XA_STRING, 8, mode, buf, (int) len);
     if (mode != PropModeReplace)
 	XUngrabServer(display);
 }
@@ -1237,7 +1237,7 @@ Process(int scrno, Bool doScreen, Bool execute)
 	snprintf(old, sizeof(old), "%s%s", editFile, backup_suffix);
 	if (dont_execute) {		/* then write to standard out */
 	    char buf[BUFSIZ];
-	    int n;
+	    size_t n;
 
 	    output = fopen (template, "r");
 	    if (output) {
@@ -1368,10 +1368,10 @@ Process(int scrno, Bool doScreen, Bool execute)
 }
 
 static void
-ShuffleEntries(Entries *db, Entries *dbs, int num)
+ShuffleEntries(Entries *db, Entries *dbs, unsigned int num)
 {
-    int *hits;
-    register int i, j, k;
+    unsigned int *hits;
+    unsigned int i, j, k;
     Entries cur, cmp;
     char *curtag, *curvalue;
 
