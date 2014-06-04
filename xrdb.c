@@ -237,7 +237,7 @@ FreeEntries(Entries *e)
 	    free(e->entry[i].value);
 	}
     }
-    free((char *)e->entry);
+    free(e->entry);
 }
 
 static void
@@ -663,7 +663,7 @@ DoScreenDefines(Display *display, int scrno, String *defs)
 	    }
 	}
     }
-    XFree((char *)vinfos);
+    XFree(vinfos);
 }
 
 static Entry *
@@ -1401,7 +1401,7 @@ ShuffleEntries(Entries *db, Entries *dbs, unsigned int num)
 		dbs[j].entry[hits[j]].usable = False;
 	}
     }
-    free((char *)hits);
+    free(hits);
 }
 
 static void
