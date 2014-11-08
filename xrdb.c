@@ -1275,7 +1275,7 @@ Process(int scrno, Bool doScreen, Bool execute)
 	    fputs(defines.val, stdin);
 	    fprintf(stdin, "\n#include \"%s\"\n", filename);
 	    fflush(stdin);
-	    fseek(stdin, 0, 0);
+	    fseek(stdin, 0, SEEK_SET);
 	    if (asprintf(&cmd, "%s %s %s", cpp_program, cpp_addflags,
 			 includes.val) == -1)
 		fatal("%s: Out of memory\n", ProgramName);
