@@ -84,7 +84,7 @@
 #define OPMERGE 5
 #define OPOVERRIDE 6
 
-#define BACKUP_SUFFIX ".bak"    /* for editting */
+#define BACKUP_SUFFIX ".bak"    /* for editing */
 
 typedef struct _Entry {
     char *tag, *value;
