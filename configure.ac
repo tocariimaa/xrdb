@@ -37,7 +37,7 @@ m4_ifndef([XORG_MACROS_VERSION],
 XORG_MACROS_VERSION(1.8)
 XORG_DEFAULT_OPTIONS
 
-AC_CHECK_FUNCS([mkstemp asprintf])
+AC_CHECK_FUNCS([mkstemp asprintf reallocarray])
 
 # Find MAXHOSTNAMELEN definition
 # Common hidey holes:

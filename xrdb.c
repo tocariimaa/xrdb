@@ -53,6 +53,7 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <stdint.h>
 
 #ifdef NEED_SYS_PARAM_H
 # include <sys/param.h>         /* defines MAXHOSTNAMELEN on BSD & Linux */
@@ -186,12 +187,27 @@ asprintf(char **ret, const char *format, ...)
 }
 #endif                          /* HAVE_ASPRINTF */
 
+#ifndef HAVE_REALLOCARRAY
+/* overflow checking realloc API from OpenBSD libc */
+static inline void *
+reallocarray(void *optr, size_t n, size_t s)
+{
+    if (n > 0 && (SIZE_MAX / n) < s)
+        return NULL;
+    return realloc(optr, n * s);
+}
+#endif
+
+# define mallocarray(n, s) reallocarray(NULL, n, s)
+
 static void
 InitBuffer(Buffer *b)
 {
     b->room = INIT_BUFFER_SIZE;
     b->used = 0;
-    b->buff = malloc(INIT_BUFFER_SIZE * sizeof(char));
+    b->buff = mallocarray(INIT_BUFFER_SIZE, sizeof(char));
+    if (b->buff == NULL)
+        fatal("%s: Can't allocate memory in %s\n", ProgramName, __func__);
 }
 
 #ifdef notyet
@@ -206,7 +222,9 @@ static void
 AppendToBuffer(Buffer *b, const char *str, size_t len)
 {
     while (b->used + len > b->room) {
-        b->buff = realloc(b->buff, 2 * b->room * (sizeof(char)));
+        b->buff = reallocarray(b->buff, b->room, 2 * sizeof(char));
+        if (b->buff == NULL)
+            fatal("%s: Can't allocate memory in %s\n", ProgramName, __func__);
         b->room *= 2;
     }
     strncpy(b->buff + b->used, str, len);
@@ -218,7 +236,10 @@ InitEntries(Entries *e)
 {
     e->room = INIT_ENTRY_SIZE;
     e->used = 0;
-    e->entry = malloc(INIT_ENTRY_SIZE * sizeof(Entry));
+    e->entry = mallocarray(INIT_ENTRY_SIZE, sizeof(Entry));
+    if (e->entry == NULL)
+        fatal("%s: Can't allocate memory in %s\n", ProgramName, __func__);
+
 }
 
 static void
@@ -258,7 +279,9 @@ AddEntry(Entries *e, Entry *entry)
     }
 
     if (e->used == e->room) {
-        e->entry = realloc(e->entry, 2 * e->room * (sizeof(Entry)));
+        e->entry = reallocarray(e->entry, e->room, 2 * sizeof(Entry));
+        if (e->entry == NULL)
+            fatal("%s: Can't allocate memory in %s\n", ProgramName, __func__);
         e->room *= 2;
     }
     entry->usable = True;
@@ -1141,7 +1164,9 @@ main(int argc, char *argv[])
     else {
         Entries *dbs;
 
-        dbs = malloc(((unsigned) ScreenCount(dpy)) * sizeof(Entries));
+        dbs = mallocarray(ScreenCount(dpy), sizeof(Entries));
+        if (dbs == NULL)
+            fatal("%s: Can't allocate memory in %s\n", ProgramName, __func__);
         for (i = 0; i < ScreenCount(dpy); i++) {
             Process(i, True, False);
             dbs[i] = newDB;
@@ -1425,7 +1450,9 @@ ShuffleEntries(Entries *db, Entries *dbs, unsigned int num)
     Entries cur, cmp;
     char *curtag, *curvalue;
 
-    hits = malloc(num * sizeof(int));
+    hits = mallocarray(num, sizeof(int));
+    if (hits == NULL)
+        fatal("%s: Can't allocate memory in %s\n", ProgramName, __func__);
     cur = dbs[0];
     for (i = 0; i < cur.used; i++) {
         curtag = cur.entry[i].tag;
