@@ -23,7 +23,7 @@ dnl Process this file with autoconf to create configure.
 # Initialize Autoconf
 AC_PREREQ([2.60])
 AC_INIT([xrdb], [1.1.1],
-        [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg], [xrdb])
+        [https://gitlab.freedesktop.org/xorg/app/xrdb/issues], [xrdb])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
 AC_USE_SYSTEM_EXTENSIONS
