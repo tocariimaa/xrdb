@@ -745,6 +745,8 @@ EditFile(Entries *new, FILE *in, FILE *out)
             buff[0] = '\0';
             if (!fgets(buff, BUFSIZ, in))
                 goto cleanup;
+            if (buff[0] == '\0')
+                continue;
             AppendToBuffer(&b, buff, strlen(buff));
             c = &b.buff[b.used - 1];
             if ((*(c--) == '\n') && (b.used == 1 || *c != '\\'))
