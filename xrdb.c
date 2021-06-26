@@ -1479,7 +1479,7 @@ Process(int scrno, Bool doScreen, Bool execute)
     }
     if (execute)
         FreeEntries(&newDB);
-    if (doScreen && xdefs)
+    if (doScreen)
         XFree(xdefs);
 }
 
