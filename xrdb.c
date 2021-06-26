@@ -1068,7 +1068,7 @@ main(int argc, char *argv[])
             }
             else if (!strcmp("-undef", arg)) {
                 if (num_cmd_defines < MAX_CMD_DEFINES) {
-                    cmd_defines[num_cmd_defines++] = "-undef";
+                    cmd_defines[num_cmd_defines++] = (char *) "-undef";
                 }
                 else {
                     fatal("%s: Too many cpp arguments\n", ProgramName);
