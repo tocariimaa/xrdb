@@ -48,6 +48,7 @@
 #include <X11/Xatom.h>
 #include <X11/Xos.h>
 #include <X11/Xmu/SysUtil.h>
+#include <X11/Xresource.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <errno.h>
@@ -84,6 +85,7 @@
 #define OPLOAD 4
 #define OPMERGE 5
 #define OPOVERRIDE 6
+#define OPGET 7
 
 #define BACKUP_SUFFIX ".bak"    /* for editing */
 
@@ -126,6 +128,7 @@ static char *editFile = NULL;
 static const char *cpp_program = NULL;
 static const char * const cpp_locations[] = { CPP };
 static const char *backup_suffix = BACKUP_SUFFIX;
+static const char *resource_name = NULL;
 static Bool dont_execute = False;
 static Bool show_cpp = False;
 static String defines;
@@ -786,6 +789,7 @@ Syntax(const char *errmsg)
             " -nocpp              do not use a preprocessor\n"
             " -E                  show preprocessor command & processed input file\n"
             " -query              query resources\n"
+            " -get name           get the content of a resource\n"
             " -load               load resources from file [default]\n"
             " -override           add in resources from file\n"
             " -merge              merge resources from file & sort\n"
@@ -982,6 +986,13 @@ main(int argc, char *argv[])
             }
             else if (isabbreviation("-query", arg, 2)) {
                 oper = OPQUERY;
+                continue;
+            }
+            else if (isabbreviation("-get", arg, 2)) {
+                oper = OPGET;
+                if (++i >= argc)
+                    Syntax("-get requires an argument");
+                resource_name = argv[i];
                 continue;
             }
             else if (isabbreviation("-load", arg, 2)) {
@@ -1284,7 +1295,19 @@ Process(int scrno, Bool doScreen, Bool execute)
     }
     else if (oper == OPQUERY) {
         if (xdefs)
-            printf("%s", xdefs);        /* fputs broken in SunOS 4.0 */
+            fputs(xdefs, stdout);
+    }
+    else if (oper == OPGET) {
+        if (xdefs && resource_name != NULL) {
+            char *type = NULL;
+            XrmValue value;
+            XrmDatabase xrdb = XrmGetStringDatabase(xdefs);
+            Bool found = XrmGetResource(xrdb, resource_name,
+                                        resource_name, &type, &value);
+            if (found == True && value.addr != NULL)
+                printf("%s\n", value.addr);
+            XrmDestroyDatabase(xrdb);
+        }
     }
     else if (oper == OPREMOVE) {
         if (xdefs)
