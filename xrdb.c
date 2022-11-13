@@ -400,10 +400,11 @@ static void
 GetEntriesString(Entries *entries, char *str)
 {
     if (str && *str) {
-        Buffer buff;
+        Buffer buff = {
+            .buff = str,
+            .used = strlen(str)
+        };
 
-        buff.buff = str;
-        buff.used = strlen(str);
         GetEntries(entries, &buff, 1);
     }
 }
@@ -701,15 +702,17 @@ DoScreenDefines(Display *display, int scrno, String *defs)
 static Entry *
 FindEntry(Entries *db, Buffer *b)
 {
-    Entries phoney;
-    Entry entry;
+    Entry entry = {
+        .usable = False,
+        .tag = NULL,
+        .value = NULL
+    };
+    Entries phoney = {
+        .used = 0,
+        .room = 1,
+        .entry = &entry
+    };
 
-    entry.usable = False;
-    entry.tag = NULL;
-    entry.value = NULL;
-    phoney.used = 0;
-    phoney.room = 1;
-    phoney.entry = &entry;
     GetEntries(&phoney, b, 1);
     if (phoney.used < 1)
         return NULL;
