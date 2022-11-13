@@ -918,19 +918,19 @@ main(int argc, char *argv[])
             = (sizeof cpp_locations) / (sizeof cpp_locations[0]);
 
         for (int j = 0; j < number_of_elements; j++) {
-            char *end, *dup;
+            char *end, *cmd;
 
             /* cut off arguments */
-            dup = strdup(cpp_locations[j]);
-            end = strchr(dup, ' ');
+            cmd = strdup(cpp_locations[j]);
+            end = strchr(cmd, ' ');
             if (end)
                 *end = '\0';
-            if (access(dup, X_OK) == 0) {
+            if (access(cmd, X_OK) == 0) {
                 cpp_program = cpp_locations[j];
-                free(dup);
+                free(cmd);
                 break;
             }
-            free(dup);
+            free(cmd);
         }
     }
 
