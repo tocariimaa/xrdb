@@ -768,7 +768,7 @@ EditFile(Entries *new, FILE *in, FILE *out)
 }
 
 static void _X_NORETURN _X_COLD
-Syntax(const char *errmsg)
+Syntax(const char *errmsg, int exitstatus)
 {
     if (errmsg != NULL)
         fprintf(stderr, "%s: %s\n", ProgramName, errmsg);
@@ -802,7 +802,7 @@ Syntax(const char *errmsg)
             "\n"
             "A - or no input filename represents stdin.\n",
             ProgramName, cpp_program ? cpp_program : "", BACKUP_SUFFIX);
-    exit(1);
+    exit(exitstatus);
 }
 
 /*
@@ -945,7 +945,7 @@ main(int argc, char *argv[])
             }
             else if (isabbreviation("-help", arg, 2) ||
                      !strcmp("--help", arg)) {
-                Syntax(NULL);
+                Syntax(NULL, EXIT_SUCCESS);
                 /* doesn't return */
             }
             else if (isabbreviation("-version", arg, 2) ||
@@ -955,19 +955,19 @@ main(int argc, char *argv[])
             }
             else if (isabbreviation("-display", arg, 2)) {
                 if (++i >= argc)
-                    Syntax("-display requires an argument");
+                    Syntax("-display requires an argument", EXIT_FAILURE);
                 displayname = argv[i];
                 continue;
             }
             else if (isabbreviation("-geometry", arg, 3)) {
                 if (++i >= argc)
-                    Syntax("-geometry requires an argument");
+                    Syntax("-geometry requires an argument", EXIT_FAILURE);
                 /* ignore geometry */
                 continue;
             }
             else if (isabbreviation("-cpp", arg, 2)) {
                 if (++i >= argc)
-                    Syntax("-cpp requires an argument");
+                    Syntax("-cpp requires an argument", EXIT_FAILURE);
                 cpp_program = argv[i];
                 continue;
             }
@@ -990,7 +990,7 @@ main(int argc, char *argv[])
             else if (isabbreviation("-get", arg, 2)) {
                 oper = OPGET;
                 if (++i >= argc)
-                    Syntax("-get requires an argument");
+                    Syntax("-get requires an argument", EXIT_FAILURE);
                 resource_name = argv[i];
                 continue;
             }
@@ -1016,14 +1016,14 @@ main(int argc, char *argv[])
             }
             else if (isabbreviation("-edit", arg, 2)) {
                 if (++i >= argc)
-                    Syntax("-edit requires an argument");
+                    Syntax("-edit requires an argument", EXIT_FAILURE);
                 oper = OPEDIT;
                 editFile = argv[i];
                 continue;
             }
             else if (isabbreviation("-backup", arg, 2)) {
                 if (++i >= argc)
-                    Syntax("-backup requires an argument");
+                    Syntax("-backup requires an argument", EXIT_FAILURE);
                 backup_suffix = argv[i];
                 continue;
             }
@@ -1076,7 +1076,7 @@ main(int argc, char *argv[])
             }
             fprintf(stderr, "%s: unrecognized argument '%s'\n",
                     ProgramName, arg);
-            Syntax(NULL);
+            Syntax(NULL, EXIT_FAILURE);
         }
         else if (arg[0] == '=')
             continue;
@@ -1224,7 +1224,7 @@ main(int argc, char *argv[])
     if (retainProp)
         XSetCloseDownMode(dpy, RetainPermanent);
     XCloseDisplay(dpy);
-    exit(0);
+    exit(EXIT_SUCCESS);
 }
 
 
@@ -1565,5 +1565,5 @@ fatal(const char *msg, ...)
     va_start(args, msg);
     vfprintf(stderr, msg, args);
     va_end(args);
-    exit(1);
+    exit(EXIT_FAILURE);
 }
