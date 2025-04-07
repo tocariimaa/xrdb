@@ -943,13 +943,15 @@ main(int argc, char *argv[])
                 filename = NULL;
                 continue;
             }
-            else if (isabbreviation("-help", arg, 2)) {
+            else if (isabbreviation("-help", arg, 2) ||
+                     !strcmp("--help", arg)) {
                 Syntax(NULL);
                 /* doesn't return */
             }
-            else if (isabbreviation("-version", arg, 2)) {
-                printf("%s\n", PACKAGE_STRING);
-                exit(0);
+            else if (isabbreviation("-version", arg, 2) ||
+                     !strcmp("--version", arg)) {
+                puts(PACKAGE_STRING);
+                exit(EXIT_SUCCESS);
             }
             else if (isabbreviation("-display", arg, 2)) {
                 if (++i >= argc)
