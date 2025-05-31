@@ -23,7 +23,7 @@
 .\" other dealings in this Software without prior written authorization
 .\" from The Open Group.
 .\"
-.TH XRDB 1 __xorgversion__
+.TH XRDB 1 2025-04-06 __xorgversion__
 .SH NAME
 xrdb - X server resource database utility
 .SH SYNOPSIS
@@ -36,7 +36,7 @@ on the root window of screen 0, or the \fBSCREEN_RESOURCES\fP property on
 the root window of any or all screens, or everything combined.
 You would normally run this program from your X startup file.
 .LP
-Most X clients use the \fBRESOURCE_MANAGER\fP and \fBSCREEN_RESOURCES\fP
+Many X clients use the \fBRESOURCE_MANAGER\fP and \fBSCREEN_RESOURCES\fP
 properties to get user preferences about color, fonts, and so on
 for applications.
 Having this information in the server (where it is available to all clients)
@@ -166,7 +166,6 @@ can read from standard input, it can be used to
 the change the contents of properties directly from
 a terminal or from a shell script.
 .SH "OPTIONS"
-.PP
 .B xrdb
 program accepts the following options:
 .TP 8
@@ -194,8 +193,8 @@ For example, when used in conjunction with \fB\-query\fP,
 the contents of all properties are output.
 For \fB\-load\fP, \fB\-override\fP, and \fB\-merge\fP,
 the input file is processed once for each screen.
-The resources which occur in common in the output for every screen are collected,
-and these are applied as the screen-independent resources.
+The resources which occur in common in the output for every screen are
+collected, and these are applied as the screen-independent resources.
 The remaining resources are applied for each individual per-screen property.
 This the default mode of operation.
 .TP 8
@@ -341,7 +340,6 @@ Xt resource documentation
 .B DISPLAY
 to figure out which display to use.
 .SH BUGS
-.PP
 The default for no arguments should be to query, not to overwrite, so that
 it is consistent with other programs.
 .SH AUTHORS
