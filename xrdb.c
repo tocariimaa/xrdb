@@ -82,6 +82,8 @@
 
 #define BACKUP_SUFFIX ".bak"    /* for editing */
 
+#define ARRLEN(arr) (sizeof(arr) / sizeof(*arr))
+
 typedef struct _Entry {
     char *tag, *value;
     int lineno;
@@ -621,7 +623,7 @@ static const char *ClassNames[] = {
     "DirectColor"
 };
 
-#define NUM_CLASS_NAMES (int)(sizeof(ClassNames) / sizeof(ClassNames[0]))
+#define NUM_CLASS_NAMES (int)ARRLEN(ClassNames)
 
 static void
 DoScreenDefines(Display *display, int scrno, String *defs)
@@ -903,8 +905,7 @@ main(int argc, char *argv[])
      * it back to NULL.
      */
     if (cpp_program == NULL) {
-        int number_of_elements
-            = (sizeof cpp_locations) / (sizeof cpp_locations[0]);
+        int number_of_elements = ARRLEN(cpp_locations);
 
         for (int j = 0; j < number_of_elements; j++) {
             char *end, *cmd;
