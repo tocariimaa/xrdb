@@ -111,10 +111,6 @@ static char *ProgramName;
 static Bool quiet = False;
 static char tmpname[32];
 static char *filename = NULL;
-#ifdef PATHETICCPP
-static Bool need_real_defines = False;
-static char tmpname2[32];
-#endif
 #ifdef WIN32
 static char tmpname3[32];
 #endif
@@ -432,17 +428,6 @@ ReadFile(Buffer *b, FILE *input)
 static void
 AddDef(String *buff, const char *title, const char *value)
 {
-#ifdef PATHETICCPP
-    if (need_real_defines) {
-        addstring(buff, "\n#define ");
-        addtokstring(buff, title);
-        if (value && (value[0] != '\0')) {
-            addstring(buff, " ");
-            addstring(buff, value);
-        }
-        return;
-    }
-#endif
     if (buff->used) {
         if (oper == OPSYMBOLS)
             addstring(buff, "\n-D");
@@ -467,11 +452,6 @@ AddSimpleDef(String *buff, const char *title)
 static void
 AddDefQ(String *buff, const char *title, const char *value)
 {
-#ifdef PATHETICCPP
-    if (need_real_defines)
-        AddDef(buff, title, value);
-    else
-#endif
     if (value && (value[0] != '\0')) {
         AddSimpleDef(buff, title);
         addstring(buff, "=\"");
@@ -519,13 +499,6 @@ AddDefHostname(String *buff, const char *title, const char *value)
 static void
 AddUndef(String *buff, const char *title)
 {
-#ifdef PATHETICCPP
-    if (need_real_defines) {
-        addstring(buff, "\n#undef ");
-        addstring(buff, title);
-        return;
-    }
-#endif
     if (buff->used) {
         if (oper == OPSYMBOLS)
             addstring(buff, "\n-U");
@@ -1092,28 +1065,9 @@ main(int argc, char *argv[])
     if (whichResources == RALL && ScreenCount(dpy) == 1)
         whichResources = RGLOBAL;
 
-#ifdef PATHETICCPP
-    if (cpp_program &&
-        (oper == OPLOAD || oper == OPMERGE || oper == OPOVERRIDE)) {
-        need_real_defines = True;
-#ifdef WIN32
-        strcpy(tmpname2, "xrdbD_XXXXXX");
-        strcpy(tmpname3, "\\temp\\xrdbD_XXXXXX");
-#else
-        strcpy(tmpname2, "/tmp/xrdbD_XXXXXX");
-#endif
-        (void) mktemp(tmpname2);
-    }
-#endif
-
     if (!filename &&
-#ifdef PATHETICCPP
-        need_real_defines
-#else
         (oper == OPLOAD || oper == OPMERGE || oper == OPOVERRIDE) &&
-        (whichResources == RALL || whichResources == RSCREENS)
-#endif
-        ) {
+        (whichResources == RALL || whichResources == RSCREENS)) {
         char inputbuf[1024];
 
 #ifdef WIN32
@@ -1348,8 +1302,7 @@ Process(int scrno, Bool doScreen, Bool execute)
                 fatal("%s: can't rename file '%s' to '%s'\n", ProgramName,
                       template, editFile);
         }
-    }
-    else {
+    } else {
         const char *cpp_addflags = "";
 
         if (oper == OPMERGE || oper == OPOVERRIDE)
@@ -1362,17 +1315,16 @@ Process(int scrno, Bool doScreen, Bool execute)
             if (cp && ((cp[3] == '\0') || cp[3] == ' '))
                 cpp_addflags = "-P";
         }
-#ifdef PATHETICCPP
-        if (need_real_defines) {
+        if (filename) {
+            if (!freopen(filename, "r", stdin))
+                fatal("%s: can't open file '%s'\n", ProgramName, filename);
+        }
+        if (cpp_program) {
 #ifdef WIN32
-            if (!(input = fopen(tmpname2, "w")))
-                fatal("%s: can't open file '%s'\n", ProgramName, tmpname2);
-            fputs(defines.val, input);
-            fprintf(input, "\n#include \"%s\"\n", filename);
-            fclose(input);
             (void) mktemp(tmpname3);
-            if (asprintf(&cmd, "%s %s %s %s > %s", cpp_program, cpp_addflags,
-                         includes.val, tmpname2, tmpname3) == -1)
+            if (asprintf(&cmd, "%s %s %s %s %s > %s", cpp_program,
+                         cpp_addflags, includes.val, defines.val,
+                         filename ? filename : "", tmpname3) == -1)
                 fatal("%s: Out of memory\n", ProgramName);
             if (show_cpp)
                 puts(cmd);
@@ -1382,14 +1334,9 @@ Process(int scrno, Bool doScreen, Bool execute)
             if (!(input = fopen(tmpname3, "r")))
                 fatal("%s: can't open file '%s'\n", ProgramName, tmpname3);
 #else
-            if (!freopen(tmpname2, "w+", stdin))
-                fatal("%s: can't open file '%s'\n", ProgramName, tmpname2);
-            fputs(defines.val, stdin);
-            fprintf(stdin, "\n#include \"%s\"\n", filename);
-            fflush(stdin);
-            fseek(stdin, 0, SEEK_SET);
-            if (asprintf(&cmd, "%s %s %s", cpp_program, cpp_addflags,
-                         includes.val) == -1)
+            if (asprintf(&cmd, "%s %s %s %s %s", cpp_program,
+                         cpp_addflags, includes.val, defines.val,
+                         filename ? filename : "") == -1)
                 fatal("%s: Out of memory\n", ProgramName);
             if (show_cpp)
                 puts(cmd);
@@ -1397,45 +1344,9 @@ Process(int scrno, Bool doScreen, Bool execute)
                 fatal("%s: cannot run '%s'\n", ProgramName, cmd);
             free(cmd);
 #endif
+        } else {
+            input = stdin;
         }
-        else {
-#endif
-            if (filename) {
-                if (!freopen(filename, "r", stdin))
-                    fatal("%s: can't open file '%s'\n", ProgramName, filename);
-            }
-            if (cpp_program) {
-#ifdef WIN32
-                (void) mktemp(tmpname3);
-                if (asprintf(&cmd, "%s %s %s %s %s > %s", cpp_program,
-                             cpp_addflags, includes.val, defines.val,
-                             filename ? filename : "", tmpname3) == -1)
-                    fatal("%s: Out of memory\n", ProgramName);
-                if (show_cpp)
-                    puts(cmd);
-                if (system(cmd) < 0)
-                    fatal("%s: cannot run '%s'\n", ProgramName, cmd);
-                free(cmd);
-                if (!(input = fopen(tmpname3, "r")))
-                    fatal("%s: can't open file '%s'\n", ProgramName, tmpname3);
-#else
-                if (asprintf(&cmd, "%s %s %s %s %s", cpp_program,
-                             cpp_addflags, includes.val, defines.val,
-                             filename ? filename : "") == -1)
-                    fatal("%s: Out of memory\n", ProgramName);
-                if (show_cpp)
-                    puts(cmd);
-                if (!(input = popen(cmd, "r")))
-                    fatal("%s: cannot run '%s'\n", ProgramName, cmd);
-                free(cmd);
-#endif
-            }
-            else {
-                input = stdin;
-            }
-#ifdef PATHETICCPP
-        }
-#endif
         ReadFile(&buffer, input);
         if (cpp_program) {
 #ifdef WIN32
@@ -1444,15 +1355,6 @@ Process(int scrno, Bool doScreen, Bool execute)
             pclose(input);
 #endif
         }
-#ifdef PATHETICCPP
-        if (need_real_defines) {
-            unlink(tmpname2);
-#ifdef WIN32
-            if (tmpname3[strlen(tmpname3) - 1] != 'X')
-                unlink(tmpname3);
-#endif
-        }
-#endif
         GetEntries(&newDB, &buffer, 0);
         if (execute) {
             FormatEntries(&buffer, &newDB);
