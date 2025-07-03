@@ -55,14 +55,7 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include <stdint.h>
-
-#ifdef NEED_SYS_PARAM_H
-# include <sys/param.h>         /* defines MAXHOSTNAMELEN on BSD & Linux */
-#endif
-
-#ifdef NEED_NETDB_H
-# include <netdb.h>             /* defines MAXHOSTNAMELEN on Solaris */
-#endif
+#include <limits.h> /* for HOST_NAME_MAX */
 
 #define SCREEN_RESOURCES "SCREEN_RESOURCES"
 
@@ -578,14 +571,11 @@ Resolution(int pixels, int mm)
 static void
 DoDisplayDefines(Display *display, String *defs, char *host)
 {
-#ifndef MAXHOSTNAMELEN
-#define MAXHOSTNAMELEN 255
-#endif
-    char client[MAXHOSTNAMELEN], server[MAXHOSTNAMELEN], *colon;
+    char client[HOST_NAME_MAX], server[HOST_NAME_MAX], *colon;
     char **extnames;
     int n;
 
-    XmuGetHostname(client, MAXHOSTNAMELEN);
+    XmuGetHostname(client, HOST_NAME_MAX);
     strncpy(server, XDisplayName(host), sizeof(server));
     server[sizeof(server) - 1] = '\0';
     /* search for final colon to skip over any embedded colons in IPv6
