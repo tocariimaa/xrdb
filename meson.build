@@ -10,19 +10,10 @@ deps = [
   cc.find_library('Xmu', required: true),
 ]
 
-# Standard paths where the C preprocesor binary might be located
-cpp_paths = [
-  '/bin/cpp',
-  '/usr/bin/cpp',
-  '/usr/lib/cpp',
-  '/usr/local/bin/cpp',
-]
-
-cpp_macro = '-DCPP='
-foreach path : cpp_paths
-  cpp_macro += f'"@path@",'
-endforeach
-add_project_arguments(cpp_macro, language: 'c')
+cpp_path = get_option('cpp')
+if cpp_path != ''
+  add_project_arguments(f'-DCPP="@cpp_path@"', language: 'c')
+endif
 
 # Check for the presence of these C stdlib functions
 funcs_to_check = [
