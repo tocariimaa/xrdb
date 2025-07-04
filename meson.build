@@ -1,7 +1,9 @@
-project('xrdb', 'c', default_options: ['buildtype=debugoptimized', 'c_std=gnu99', 'warning_level=2'])
+project('xrdb', 'c',
+  default_options: ['buildtype=debugoptimized', 'c_std=gnu99', 'warning_level=2'],
+  version: '1.2.3',
+)
 
-version = '1.2.3'
-package_string = f'xrdb @version@'
+package_string = 'xrdb @0@'.format(meson.project_version())
 cc = meson.get_compiler('c')
 
 srcs = ['xrdb.c']
