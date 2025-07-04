@@ -1075,18 +1075,12 @@ main(int argc, char *argv[])
 #else
         strcpy(tmpname, "/tmp/xrdb_XXXXXX");
 #endif
-#ifndef HAVE_MKSTEMP
-        (void) mktemp(tmpname);
-        filename = tmpname;
-        fp = fopen(filename, "w");
-#else
         {
             int fd = mkstemp(tmpname);
 
             filename = tmpname;
             fp = fdopen(fd, "w");
         }
-#endif                          /* MKSTEMP */
         if (!fp)
             fatal("%s: Failed to open temp file: %s\n", ProgramName, filename);
         while (fgets(inputbuf, sizeof(inputbuf), stdin) != NULL)
@@ -1264,16 +1258,11 @@ Process(int scrno, Bool doScreen, Bool execute)
 
         input = fopen(editFile, "r");
         snprintf(template, sizeof(template), "%sXXXXXX", editFile);
-#ifndef HAVE_MKSTEMP
-        (void) mktemp(template);
-        output = fopen(template, "w");
-#else
         {
             int fd = mkstemp(template);
 
             output = fdopen(fd, "w");
         }
-#endif
         if (!output)
             fatal("%s: can't open temporary file '%s'\n", ProgramName,
                   template);

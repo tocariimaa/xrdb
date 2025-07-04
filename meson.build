@@ -20,7 +20,6 @@ endif
 # Check for the presence of these C stdlib functions
 funcs_to_check = [
   ['asprintf', 'HAVE_ASPRINTF'],
-  ['mkstemp', 'HAVE_MKSTEMP'],
   ['reallocarray', 'HAVE_REALLOCARRAY'],
 ]
 foreach fn : funcs_to_check
