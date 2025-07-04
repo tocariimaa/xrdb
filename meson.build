@@ -30,11 +30,9 @@ funcs_to_check = [
   ['mkstemp', 'HAVE_MKSTEMP'],
   ['reallocarray', 'HAVE_REALLOCARRAY'],
 ]
-defmacro_template = '-D@0@'
-
 foreach fn : funcs_to_check
   if cc.has_function(fn[0])
-    add_project_arguments(defmacro_template.format(fn[1]), language: 'c')
+    add_project_arguments('-D@0@'.format(fn[1]), language: 'c')
   endif
 endforeach
 
