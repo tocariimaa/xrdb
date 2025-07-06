@@ -29,4 +29,6 @@ add_project_arguments(
   '-D_DEFAULT_SOURCE', '-D_XOPEN_SOURCE=700L', f'-DPACKAGE_STRING="@package_string@"',
   language: 'c'
 )
+
 executable('xrdb', srcs, dependencies: deps)
+subdir('man')
