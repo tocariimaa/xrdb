@@ -11,6 +11,7 @@ custom_target(
   command: [
     sed,
     '-e', f's/__xorgversion__/"@xrdb_version@" "X Version 11"/g',
+    '-e', 's/__appmansuffix__/1/g', '-e', 's/__miscmansuffix__/7/g',
     '@INPUT@'
   ],
 )
