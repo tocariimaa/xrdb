@@ -18,13 +18,10 @@ if cpp_path != ''
 endif
 
 # Check for the presence of these C stdlib functions
-funcs_to_check = [
-  ['asprintf', 'HAVE_ASPRINTF'],
-  ['reallocarray', 'HAVE_REALLOCARRAY'],
-]
+funcs_to_check = ['asprintf', 'reallocarray']
 foreach fn : funcs_to_check
-  if cc.has_function(fn[0])
-    add_project_arguments('-D@0@'.format(fn[1]), language: 'c')
+  if cc.has_function(fn)
+    add_project_arguments('-DHAVE_@0@'.format(fn.to_upper()), language: 'c')
   endif
 endforeach
 
